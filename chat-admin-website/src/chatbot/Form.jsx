@@ -160,6 +160,7 @@ const Form = ({ chatbotId, onChatStart }) => {
             </label>
 
             {f.type === "dropdown" ? (
+              // latest 
               <select
                 value={values[f.id] || ""}
                 onChange={(e) =>
