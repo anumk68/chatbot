@@ -75,7 +75,7 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
       <div className="text-center mt-4">
         <button
           type="button"
-          onClick={() => setActivePanel("user")}
+          onClick={() => setActivePanel("admin")}
           className="login-link text-sm"
         >
           Back to Login

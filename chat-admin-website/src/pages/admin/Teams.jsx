@@ -94,31 +94,31 @@ export default function TeamPage() {
       .toUpperCase();
   };
 
-  const normalizeAgent = (a) => {
-    return {
-      id: a.id ?? a._id ?? null,
-      name: a.name || a.full_name || "Unnamed",
-      email: a.email || "",
-      role: a.role || "Agent",
-      groups: a.groups
-        ? Array.isArray(a.groups)
-          ? a.groups
-          : tryParseJSON(a.groups)
-        : [],
-      status: a.status || (a.is_invited ? "Invited" : "Offline"),
-      statusColor:
-        a.statusColor ||
-        (a.status === "Accepting chats"
-          ? "green"
-          : a.status === "Invited"
-          ? "yellow"
-          : "gray"),
-      chatLimit: a.chat_limit ?? a.chatLimit ?? 0,
-      lastSeen: a.last_seen ?? a.lastSeen ?? "-",
-      isCurrentUser: a.is_current_user || a.isCurrent || false,
-      isInvited: a.is_invited || false,
-    };
+const normalizeAgent = (a) => {
+  return {
+    id: a.id ?? a._id ?? null,
+    name: a.name || a.full_name || "Unnamed",
+    email: a.email || "",
+    role: a.role || "Agent",
+    groups: a.groups
+      ? Array.isArray(a.groups)
+        ? a.groups
+        : tryParseJSON(a.groups)
+      : [],
+    status: a.status || (a.is_invited ? "Pending" : "Offline"), // ← yahan "Pending" status set karo
+    statusColor:
+      a.statusColor ||
+      (a.status === "Accepting chats"
+        ? "green"
+        : a.status === "Invited" || a.status === "Pending"
+        ? "yellow"
+        : "gray"),
+    chatLimit: a.chat_limit ?? a.chatLimit ?? 0,
+    lastSeen: a.last_seen ?? a.lastSeen ?? "-",
+    isCurrentUser: a.is_current_user || a.isCurrent || false,
+    isInvited: a.is_invited || false,
   };
+};
 
   function tryParseJSON(str) {
     try {

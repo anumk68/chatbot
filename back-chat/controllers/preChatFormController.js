@@ -4,8 +4,12 @@ import FormModel from "../models/Form.js";
 // GET /api/prechat/form/:chatbotId
 export const getPreChatForm = async (req, res) => {
   const { chatbotId } = req.params;
+  console.log("Requested chatbotId:", chatbotId);
+
   try {
     const form = await FormModel.getFormByChatbotId(chatbotId);
+    console.log("Form from DB:", form);
+
     if (!form)
       return res
         .status(404)
@@ -28,6 +32,7 @@ export const getPreChatForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // POST /api/prechat/form/:chatbotId/save
 export const savePreChatForm = async (req, res) => {

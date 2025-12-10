@@ -46,7 +46,7 @@ const PreChatForm = () => {
     ...formData,
   });
 
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
   const [isChanged, setIsChanged] = useState(false);
   const [saving, setSaving] = useState(false);
 

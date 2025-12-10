@@ -296,3 +296,27 @@
   background-color: #1d4ed8;
   /* hover:bg-blue-700 */
 }
+
+
+.custom-scroll::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* gradient thumb (blue -> purple) */
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #2563eb 0%, #7c3aed 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.12); 
+  transition: filter .15s ease;
+}
+
+/* darker on hover */
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  filter: brightness(0.9);
+}
+
+/* track */
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}

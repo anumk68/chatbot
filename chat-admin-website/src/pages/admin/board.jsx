@@ -78,7 +78,7 @@ const AnalyticsBoard = () => {
       });
       if (resp.data.success) {
         setVisitors(resp.data.visitors || 0);
-        console.log("Visitors:", resp.data.visitors);
+        // console.log("Visitors:", resp.data.visitors);
         setChats(resp.data.chats || 0);
         setPageViews(resp.data.pageViews || 0);
 
@@ -255,7 +255,7 @@ const AnalyticsBoard = () => {
           {/* Visitors */}
           <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-700 mb-1 flex items-center gap-2">
-               Visitors
+               Customers
             </h2>
             <p className="text-4xl font-extrabold text-blue-600 animate-pulse">
               {visitors}
@@ -268,7 +268,7 @@ const AnalyticsBoard = () => {
           {/* Chats */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200">
             <h2 className="text-lg font-semibold text-gray-700 mb-3">
-               Chats
+               Customer Chats
             </h2>
 
             <div className="flex items-center justify-between gap-4">

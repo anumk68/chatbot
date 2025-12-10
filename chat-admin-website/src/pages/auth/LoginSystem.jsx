@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, registerUser } from "../../redux/auth/authSlice";
+import { loginUser, registerUser, setUser } from "../../redux/auth/authSlice";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 import ForgotPassword from "./ForgotPassword";
 import { toast } from "react-toastify";
+
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../../firebase";
+import axios from "axios";
 
 const LoginSystem = ({ initialPanel = "admin" }) => {
   const [activePanel, setActivePanel] = useState(initialPanel);
@@ -18,8 +22,10 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { status, user, error } = useSelector((state) => state.auth);
+  const { status } = useSelector((state) => state.auth);
   const loading = status === "loading";
+
+  const API_URL = import.meta.env.VITE_NODE_BASE_URL;
 
   const [adminForm, setAdminForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({
@@ -37,15 +43,48 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     wrapper.classList.add(activePanel === "admin" ? "rotate-y" : "rotate-x-up");
   }, [activePanel]);
 
-  //  LOGIN 
+  // Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const firebaseToken = await result.user.getIdToken();
+
+      const res = await axios.post(`${API_URL}/api/auth/google-login`, {
+        token: firebaseToken,
+      });
+
+      if (res.data.token) {
+        const userData = {
+          token: res.data.token,
+          name: res.data.name,
+          email: res.data.email,
+          role: res.data.role,
+          chatbot_id: res.data.chatbot_id,
+        };
+
+        dispatch(setUser(userData));
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("authToken", res.data.token);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("chatbotId", res.data.chatbot_id);
+
+        toast.success("Logged in with Google");
+        navigate("/admin-dashboard");
+      }
+    } catch (error) {
+      console.error("Google login error", error);
+      toast.error("Google login failed");
+    }
+  };
+
+  // Normal Login
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setPanelErrors((prev) => ({ ...prev, admin: "" }));
-
     try {
       const payload = await dispatch(loginUser(adminForm)).unwrap();
       toast.success(payload.message);
-      localStorage.setItem("token", payload.token); 
+      localStorage.setItem("token", payload.token);
 
       if (payload.role === "admin") navigate("/admin-dashboard");
       else navigate("/agent-dashboard");
@@ -55,19 +94,14 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     }
   };
 
-  //  SIGNUP 
+  // Signup
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    setPanelErrors((prev) => ({ ...prev, signup: "" }));
-
     const { name, email, password, confirmPassword } = signupForm;
+
     if (!name.trim()) return toast.error("Name is required");
     if (!email.trim()) return toast.error("Email is required");
     if (!password.trim()) return toast.error("Password is required");
-    if (!confirmPassword.trim())
-      return toast.error("Confirm password is required");
-    if (password.length < 6)
-      return toast.error("Password must be at least 6 characters");
     if (password !== confirmPassword)
       return toast.error("Passwords do not match");
 
@@ -76,13 +110,6 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
         registerUser({ name, email, password, role: "admin" })
       ).unwrap();
       toast.success(payload.message || "Signup successful");
-      setSignupForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "admin",
-      });
       setActivePanel("admin");
     } catch (err) {
       setPanelErrors((prev) => ({ ...prev, signup: err }));
@@ -103,6 +130,8 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
             panelErrors={panelErrors}
             setActivePanel={setActivePanel}
             setPanelErrors={setPanelErrors}
+            handleGoogleLogin={handleGoogleLogin}
+            API_URL={API_URL}
           />
 
           <SignupForm

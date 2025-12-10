@@ -155,11 +155,13 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
           {openSections.customers && (
             <div className="ml-6 flex flex-col text-gray-300">
               <button
-                onClick={() => navigate("/all-customers")}
+              onClick={() => navigate("/all-customers")}
+
                 className="px-2 py-1 hover:text-white text-left"
               >
                 All Customers
               </button>
+
               <button className="px-2 py-1 hover:text-white text-left">
                 Queued customers
               </button>

@@ -25,6 +25,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "emoji-picker-react": "^4.13.3",
+    "firebase": "^12.6.0",
     "framer-motion": "^12.23.24",
     "jwt-decode": "^3.1.2",
     "laravel-echo": "^2.2.4",

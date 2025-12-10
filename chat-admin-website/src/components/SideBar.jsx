@@ -95,7 +95,7 @@ const SideBar = ({ children }) => {
 
           <nav className="flex flex-col items-center gap-2 mt-2 ">
             <button
-              onClick={() => handleNavClick("/admin-Dashboard")}
+              onClick={() => handleNavClick("/admin-dashboard")}
               className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
             >
               <Home size={20} />

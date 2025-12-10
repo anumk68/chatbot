@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, facebookProvider } from "../../firebase";
 
 const LoginForm = ({
   activePanel,
@@ -9,7 +11,33 @@ const LoginForm = ({
   loading,
   setPanelErrors,
   setActivePanel,
+  handleGoogleLogin,
 }) => {
+  // Facebook Login
+  const handleFacebookLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, facebookProvider);
+      const token = await result.user.getIdToken();
+
+      // Send token to your backend
+      const res = await fetch(`${API_URL}/api/auth/facebook-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("user", JSON.stringify(data));
+        window.location.href = "/admin-dashboard";
+      }
+    } catch (err) {
+      console.error("Facebook login error:", err);
+      alert("Facebook login failed");
+    }
+  };
+
   return (
     <div
       className={`form-panel admin-panel ${
@@ -26,7 +54,7 @@ const LoginForm = ({
         />
         <h2 className="login-title"> Login Form</h2>
 
-        <form onSubmit={(e) => handleSubmit(e, "admin")}>
+        <form onSubmit={handleSubmit}>
           <div className="login-input-group">
             <FontAwesomeIcon icon={faEnvelope} className="login-input-icon" />
             <input
@@ -58,6 +86,36 @@ const LoginForm = ({
           <button type="submit" className="login-btn login-btn-white">
             Login
           </button>
+
+          <div className="mt-4 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border"
+            >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                className="w-5 h-5"
+              />
+              <span className="text-gray-700 font-medium">
+                Continue with Google
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleFacebookLogin}
+              className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:shadow-lg transition "
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
+                className="w-5 h-5"
+              />
+              <span className="text-white font-medium">
+                Continue with Facebook
+              </span>
+            </button>
+          </div>
 
           {loading && (
             <p className="text-sm text-blue-600 mt-2">Logging in...</p>

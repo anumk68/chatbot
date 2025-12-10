@@ -31,7 +31,7 @@ export default function AllMessages() {
           `${API_URL}/assigned/${chatbotId}/assigned-pairs`
         );
         const sortedConversations = (res.data.data || []).sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at) // latest first
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
         setMessages(sortedConversations);
       } catch (e) {
@@ -50,7 +50,7 @@ export default function AllMessages() {
     try {
       const res = await axios.get(`${API_URL}/messages/${conversationId}`);
       const sortedMessages = (res.data.messages || []).sort(
-        (a, b) => new Date(a.created_at) - new Date(b.created_at) // oldest first
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
       );
       setChatHistory(sortedMessages);
     } catch (err) {
@@ -64,7 +64,7 @@ export default function AllMessages() {
     .filter((msg) =>
       msg.customer_name.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // latest conversation first
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   // Pagination logic
   const indexOfLastMessage = currentPage * messagesPerPage;
@@ -122,7 +122,7 @@ export default function AllMessages() {
                 {msg.customer_name?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1">
-                <h3 className="text-gray-900 font-semibold text-sm md:text-base truncate">
+                <h3 className="text-gray-900 font-semibold text-sm md:text-base truncate capitalize">
                   {msg.customer_name}
                 </h3>
                 <p className="text-gray-500 text-xs md:text-sm truncate">
@@ -190,7 +190,8 @@ export default function AllMessages() {
                 </div>
               ) : (
                 chatHistory.map((chat, index) => {
-                  const isAgent = chat.sender_type === "agent";
+                  const isAgent = chat.sender_type?.toLowerCase() === "agent";
+
                   return (
                     <div
                       key={index}
@@ -199,7 +200,7 @@ export default function AllMessages() {
                       }`}
                     >
                       <div
-                        className={`max-w-[70%] px-4 py-3 rounded-2xl shadow border transition
+                        className={`max-w-[100%] px-4 py-3 rounded-2xl shadow border transition
                           ${
                             isAgent
                               ? "bg-blue-600 text-white border-blue-500 rounded-br-none"
@@ -207,8 +208,8 @@ export default function AllMessages() {
                           }`}
                       >
                         <p
-                          className={`text-xs font-semibold mb-1 ${
-                            isAgent ? "text-blue-200" : "text-gray-600"
+                          className={`text-xs font-semibold mb-1 capitalize ${
+                            isAgent ? "text-white/90" : "text-gray-600"
                           }`}
                         >
                           {chat.sender}

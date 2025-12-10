@@ -5,6 +5,8 @@ import db from "../config/db.js";
 import UserModel from "../models/userModel.js";
 import nodemailer from "nodemailer";
 import { loginAgent, logoutAgent } from "./agentController.js";
+import admin from "../firebaseAdmin.js";
+
 
 const API_URL = process.env.CORS_ORIGIN
 
@@ -130,7 +132,80 @@ export const logout = async (req, res) => {
   }
 };
 
+// google login
+export const googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
 
+    // Verify Google token
+    const decoded = await admin.auth().verifyIdToken(token);
+
+    const email = decoded.email;
+    const name = decoded.name;
+
+    let user = await UserModel.findByEmail(db, email);
+
+    // If user does not exist → auto create account
+    if (!user) {
+      const chatbot_id = `CHAT_${Math.random()
+        .toString(36)
+        .substring(2, 6)
+        .toUpperCase()}`;
+
+        const randomPass = crypto.randomBytes(20).toString("hex");
+
+      await UserModel.createUser(db, {
+        name,
+        email,
+        password: randomPass,
+        role: "admin",
+        chatbot_id,
+        status: "active",
+      });
+
+      user = await UserModel.findByEmail(db, email);
+    }
+
+    const jwtToken = jwt.sign(
+      { id: user.id, role: user.role, chatbot_id: user.chatbot_id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Google login successful",
+      token: jwtToken,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      chatbot_id: user.chatbot_id,
+    });
+  } catch (err) {
+    console.error("GOOGLE LOGIN ERROR:", err);
+    res.status(500).json({ message: "Google login failed" });
+  }
+};
+
+// FACEBOOK LOGIN
+export const facebookLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const { uid, email } = decodedToken;
+
+    // Find or create user in your DB
+    const user = await findOrCreateUser({ uid, email });
+
+    // Generate your app JWT
+    const jwtToken = generateJWT(user);
+
+    res.json({ token: jwtToken, user });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Invalid Firebase token" });
+  }
+};
 
 // =============== FORGOT PASSWORD ===============
 export const forgotPassword = async (req, res) => {

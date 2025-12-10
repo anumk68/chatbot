@@ -2,7 +2,6 @@
 import express from "express";
 const router = express.Router();
 
-// ⚠️ Import db connection
 import db from "../config/db.js";
 
 // Example route
