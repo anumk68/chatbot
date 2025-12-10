@@ -152,7 +152,8 @@ export const assignPairsbyId = async (req, res) => {
     const [rows] = await db.query(
       `SELECT conversation_id, temp_user_id, agent_id, agent_name, customer_name, chatbot_id 
        FROM assigned_customers 
-       WHERE chatbot_id = ? AND agent_id = ?`,
+       WHERE chatbot_id = ? AND agent_id = ?
+       ORDER BY created_at DESC`, // Latest customer first
       [chatbotId, agentId]
     );
 
@@ -162,3 +163,4 @@ export const assignPairsbyId = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+

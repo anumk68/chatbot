@@ -86,7 +86,7 @@
                 : "bg-white text-gray-900 border border-gray-200";
 
             const fullUrl = msg.file_url
-              ? `${API_URL}/${msg.file_url}`
+              ? `${API_URL}${msg.file_url}`
               : null;
 
             const isImage =

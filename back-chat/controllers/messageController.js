@@ -79,10 +79,14 @@ export const CustomersaveMessage = async (req, res) => {
 
     // FIXED: Emit only to that agent room
     io.to(`conv_${convId}`).emit("customer_message_to_agent", savedMsg);
+    console.log("customer message emitted" , savedMsg
+
+
+      
+    )
 
     res.json({ success: true, message: "Message saved", data: savedMsg });
 
-    console.log("Customer send msg:", savedMsg);
   } catch (err) {
     console.error("Customer Send Message Error:", err);
     res.status(500).json({ success: false, message: "Server error" });

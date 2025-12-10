@@ -6,9 +6,16 @@ const ChatList = ({ conversations, activeConversation, setActiveConversation }) 
   const ITEMS_PER_PAGE = 10; // Chats per page
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(conversations.length / ITEMS_PER_PAGE);
+  // Sort conversations by latest message (descending)
+  const sortedConversations = [...conversations].sort((a, b) => {
+    const aTime = a.last_message_time || a.created_at || 0;
+    const bTime = b.last_message_time || b.created_at || 0;
+    return new Date(bTime) - new Date(aTime); // Latest on top
+  });
+
+  const totalPages = Math.ceil(sortedConversations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentChats = conversations.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentChats = sortedConversations.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handlePrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -55,6 +62,10 @@ const ChatList = ({ conversations, activeConversation, setActiveConversation }) 
             </div>
           );
         })}
+
+        {sortedConversations.length === 0 && (
+          <div className="p-4 text-center text-gray-400">No conversations yet</div>
+        )}
       </div>
 
       {/* Pagination Controls */}

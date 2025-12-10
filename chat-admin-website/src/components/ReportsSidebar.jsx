@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ReportsSidebar = ({ isOpen, onClose }) => {
   const [openSections, setOpenSections] = useState({});
   const navigate = useNavigate();
-  
+
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -16,7 +16,7 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
   return (
     <aside
       className={`
-         fixed top-15.5 left-14 h-[calc(100%-56px)] w-64 bg-gradient-to-b from-[#cf4047] from-60% to-blue-500 border-r shadow-lg z-40
+         fixed top-16 left-14 h-[calc(100%-56px)] w-64 bg-gradient-to-b from-[#cf4047] from-60% to-blue-500 border-r shadow-lg z-40
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
       `}
@@ -36,9 +36,9 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
       <nav className="flex flex-col p-2 text-lg text-white overflow-y-auto h-[calc(100%-56px)]">
         {/* Summary Reports */}
         <div>
-               <button className="ml-6 px-3 py-2 rounded hover:bg-gray-800 text-left">
-          My saved views
-        </button>
+          <button className="ml-6 px-3 py-2 rounded hover:bg-gray-800 text-left">
+            My saved views
+          </button>
           <button
             onClick={() => toggleSection("summary")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
@@ -53,12 +53,11 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
           {openSections.summary && (
             <div className="ml-6 flex flex-col text-gray-300">
               <button className="px-2 py-1 hover:text-white text-left">
-               Last 7 Days
+                Last 7 Days
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
                 Dashboard
               </button>
-            
             </div>
           )}
         </div>
@@ -85,27 +84,26 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
                 Chat engagement
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
-             Missed chats
+                Missed chats
               </button>
-                <button className="px-2 py-1 hover:text-white text-left">
-            Campaign conversion
+              <button className="px-2 py-1 hover:text-white text-left">
+                Campaign conversion
               </button>
-                <button className="px-2 py-1 hover:text-white text-left">
-            Tags usage
+              <button className="px-2 py-1 hover:text-white text-left">
+                Tags usage
               </button>
-                <button className="px-2 py-1 hover:text-white text-left">
-             Chat satisfaction
+              <button className="px-2 py-1 hover:text-white text-left">
+                Chat satisfaction
               </button>
-               <button className="px-2 py-1 hover:text-white text-left">
-             Chat Availability
+              <button className="px-2 py-1 hover:text-white text-left">
+                Chat Availability
               </button>
-               <button className="px-2 py-1 hover:text-white text-left">
-             Chat forms
+              <button className="px-2 py-1 hover:text-white text-left">
+                Chat forms
               </button>
-               <button className="px-2 py-1 hover:text-white text-left">
-             Chat duration
+              <button className="px-2 py-1 hover:text-white text-left">
+                Chat duration
               </button>
-              
             </div>
           )}
         </div>
@@ -135,14 +133,14 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
                 Staffing prediction
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
-               Agent activity
+                Agent activity
               </button>
             </div>
           )}
         </div>
 
-
-                <div>
+        {/* Customers */}
+        <div>
           <button
             onClick={() => toggleSection("customers")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
@@ -156,19 +154,24 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
           </button>
           {openSections.customers && (
             <div className="ml-6 flex flex-col text-gray-300">
+              <button
+                onClick={() => navigate("/all-customers")}
+                className="px-2 py-1 hover:text-white text-left"
+              >
+                All Customers
+              </button>
               <button className="px-2 py-1 hover:text-white text-left">
                 Queued customers
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
                 Queued abandonment
               </button>
-              
             </div>
           )}
         </div>
 
-        {/* Export Options */}
-                     <div>
+        {/* Insights */}
+        <div>
           <button
             onClick={() => toggleSection("insights")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
@@ -186,14 +189,14 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
                 Top customer questions
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
-               Alert
+                Alert
               </button>
-              
             </div>
           )}
         </div>
 
-                            <div>
+        {/* Ecommerce */}
+        <div>
           <button
             onClick={() => toggleSection("ecommerce")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
@@ -208,19 +211,17 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
           {openSections.ecommerce && (
             <div className="ml-6 flex flex-col text-gray-300">
               <button className="px-2 py-1 hover:text-white text-left">
-               Achieve goals
+                Achieve goals
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
-               Tracked sales
+                Tracked sales
               </button>
-              
             </div>
           )}
         </div>
-        
 
-
-                                   <div>
+        {/* Export Raw Data */}
+        <div>
           <button
             onClick={() => toggleSection("exportrawdata")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
@@ -235,16 +236,16 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
           {openSections.exportrawdata && (
             <div className="ml-6 flex flex-col text-gray-300">
               <button className="px-2 py-1 hover:text-white text-left">
-              Generate report
+                Generate report
               </button>
               <button className="px-2 py-1 hover:text-white text-left">
-             Scheduled report
+                Scheduled report
               </button>
-              
             </div>
           )}
         </div>
-        {/* Custom Reports */}
+
+        {/* Reviews */}
         <button className="px-3 py-2 rounded hover:bg-gray-800 text-left">
           Reviews
         </button>
