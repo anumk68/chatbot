@@ -45,26 +45,25 @@ const AnalyticsBoard = () => {
   }, [selectedRange, selectedDate]);
 
   const fetchChatStats = async () => {
-  try {
-    const params = { range: selectedRange };
-    if (selectedRange === "custom" && selectedDate) {
-      params.date = selectedDate.toISOString().slice(0, 10);
+    try {
+      const params = { range: selectedRange };
+      if (selectedRange === "custom" && selectedDate) {
+        params.date = selectedDate.toISOString().slice(0, 10);
+      }
+
+      const resp = await axios.get(
+        `${API_URL}/analytics/stats/chats/${chatbotId}`,
+        { params }
+      );
+
+      if (resp.data.success) {
+        setAnsweredChats(resp.data.answered || 0);
+        setMissedChats(resp.data.missed || 0);
+      }
+    } catch (err) {
+      console.error("Chat stats fetch error", err);
     }
-
-    const resp = await axios.get(
-      `${API_URL}/analytics/stats/chats/${chatbotId}`,
-      { params }
-    );
-
-    if (resp.data.success) {
-      setAnsweredChats(resp.data.answered || 0);
-      setMissedChats(resp.data.missed || 0);
-    }
-  } catch (err) {
-    console.error("Chat stats fetch error", err);
-  }
-};
-
+  };
 
   const fetchAnalytics = async () => {
     try {
@@ -102,19 +101,18 @@ const AnalyticsBoard = () => {
 
   const handleRangeChange = (value) => {
     setSelectedRange(value);
-    if (value === "custom") setShowCalendar(true);
-    else {
+
+    if (value === "custom") {
+      setShowCalendar(true);
+    } else {
       setShowCalendar(false);
       setSelectedDate(null);
     }
   };
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen w-full">
       <div className="bg-white rounded-xl shadow p-5 mb-6">
-        <h2 className="text-xl font-bold text-gray-800">
-          Historical Analytics
-        </h2>
+        <h2 className="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -196,7 +194,6 @@ const AnalyticsBoard = () => {
                     className="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg"
                     onClick={() => {
                       setShowCalendar(false);
-                      if (selectedDate) setSelectedRange("custom");
                     }}
                   >
                     Apply
@@ -255,7 +252,7 @@ const AnalyticsBoard = () => {
           {/* Visitors */}
           <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-700 mb-1 flex items-center gap-2">
-               Customers
+              Customers
             </h2>
             <p className="text-4xl font-extrabold text-blue-600 animate-pulse">
               {visitors}
@@ -268,7 +265,7 @@ const AnalyticsBoard = () => {
           {/* Chats */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200">
             <h2 className="text-lg font-semibold text-gray-700 mb-3">
-               Customer Chats
+              Customer Chats
             </h2>
 
             <div className="flex items-center justify-between gap-4">
@@ -290,7 +287,7 @@ const AnalyticsBoard = () => {
 
           <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-700 mb-1">
-               Page Views
+              Page Views
             </h2>
             <p className="text-4xl font-extrabold text-purple-600">
               {pageViews}
@@ -301,41 +298,73 @@ const AnalyticsBoard = () => {
           </div>
 
           {/* Reporting */}
+          {/* Reporting */}
           <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200 xl:col-span-1">
             <h2 className="text-lg font-semibold text-gray-700 mb-3">
-               Reporting
+              Reporting
             </h2>
 
             {/* Positive Sentiment */}
-            <div>
+            <div className="mb-3">
               <div className="flex justify-between mb-1">
                 <span>Positive Sentiment</span>
-                <span className="font-semibold text-red-600">0.0%</span>
+                <span className="font-semibold text-red-600">
+                  {chats > 0 ? ((answeredChats / chats) * 100).toFixed(1) : 0}%
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-red-400 h-2 rounded-full w-[0%]"></div>
+                <div
+                  className="bg-red-400 h-2 rounded-full"
+                  style={{
+                    width: `${chats > 0 ? (answeredChats / chats) * 100 : 0}%`,
+                  }}
+                ></div>
               </div>
             </div>
 
             {/* Engagement */}
-            <div className="mt-3">
+            <div className="mb-3">
               <div className="flex justify-between mb-1">
                 <span>Engagement</span>
-                <span className="font-semibold text-red-600">0.0%</span>
+                <span className="font-semibold text-orange-600">
+                  {visitors > 0 ? ((chats / visitors) * 100).toFixed(1) : 0}%
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-orange-400 h-2 rounded-full w-[0%]"></div>
+                <div
+                  className="bg-orange-400 h-2 rounded-full"
+                  style={{
+                    width: `${visitors > 0 ? (chats / visitors) * 100 : 0}%`,
+                  }}
+                ></div>
               </div>
             </div>
 
             {/* Availability */}
-            <div className="mt-3">
+            <div className="mb-3">
               <div className="flex justify-between mb-1">
                 <span>Availability</span>
-                <span className="font-semibold text-green-600">0.1%</span>
+                <span className="font-semibold text-green-600">
+                  {answeredChats + missedChats > 0
+                    ? (
+                        (answeredChats / (answeredChats + missedChats)) *
+                        100
+                      ).toFixed(1)
+                    : 0}
+                  %
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full w-[10%]"></div>
+                <div
+                  className="bg-green-500 h-2 rounded-full"
+                  style={{
+                    width: `${
+                      answeredChats + missedChats > 0
+                        ? (answeredChats / (answeredChats + missedChats)) * 100
+                        : 0
+                    }%`,
+                  }}
+                ></div>
               </div>
             </div>
           </div>

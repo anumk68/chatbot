@@ -40,6 +40,7 @@ import InstallLiveChat from "../pages/admin/settingstabs/InstallLiveChat";
 import AllCustomers from "../pages/admin/AllCustomers.jsx";
 import ALlWebsites from "../pages/admin/AllWebsites.jsx";
 import AllMessages from "../pages/admin/AllMessages.jsx";
+import Traffic from '../pages/admin/engage/Traffic.jsx';
 
 /* Agent Imports */
 import AgentSideBar from "../components/AgentSideBar";
@@ -163,6 +164,16 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/traffics"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <SideBar>
+              <Traffic />
+            </SideBar>
+          </ProtectedRoute>
+        }
+      />
 
       {/* ---------------- SETTINGS ROUTES ---------------- */}
       <Route
@@ -231,6 +242,7 @@ const AppRoutes = () => {
         {/* Additional */}
         <Route path="all-customers" element={<AllCustomers />} />
         <Route path="website-list" element={<ALlWebsites />} />
+        <Route path="traffics" element={<Traffic />} />
         <Route path="tags" element={<Tags />} />
         <Route path="sales-tracker" element={<SalesTracker />} />
       </Route>
