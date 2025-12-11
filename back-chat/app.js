@@ -22,6 +22,8 @@ import messageRoutes from "./routes/messages.js";
 import scriptRoutes from "./routes/script.js";
 import groupRoutes from './routes/groupRoutes.js'
 
+import campaignRoutes from './routes/campaignRoutes.js'
+
 
 // import TrackRoutes from "./routes/track.js";
 
@@ -124,6 +126,10 @@ app.use("/api/analytics", analyticsRouter);
 
 // health
 app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+//compaign
+app.use("/api/campaigns", campaignRoutes);
+
 
 
 export default app;

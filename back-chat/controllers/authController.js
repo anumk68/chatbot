@@ -60,30 +60,14 @@ export const login = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (user.status === "blocked") {
-      return res
-        .status(403)
-        .json({ message: "Your account is blocked. Contact admin." });
+      return res.status(403).json({ message: "Your account is blocked. Contact admin." });
     }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match)
-      return res.status(400).json({ message: "Invalid password" });
+    if (!match) return res.status(400).json({ message: "Invalid password" });
 
-    // Admin without chatbot_id → generate new one
-    if (user.role === "admin" && !user.chatbot_id) {
-      const chatbot_id = `CHAT_${Math.random()
-        .toString(36)
-        .substring(2, 6)
-        .toUpperCase()}`;
-
-      await db.query("UPDATE users SET chatbot_id = ? WHERE id = ?", [
-        chatbot_id,
-        user.id,
-      ]);
-      user.chatbot_id = chatbot_id;
-    }
-
-  
+    // Set active on login
+    await db.query("UPDATE users SET status = 'active' WHERE id = ?", [user.id]);
 
     const token = jwt.sign(
       { id: user.id, role: user.role, chatbot_id: user.chatbot_id },
@@ -118,9 +102,11 @@ export const logout = async (req, res) => {
     if (!userId)
       return res.status(401).json({ message: "Unauthorized" });
 
-  
-
     const user = await UserModel.findById(db, userId);
+
+    // Set inactive on logout
+    await db.query("UPDATE users SET status = 'inactive' WHERE id = ?", [userId]);
+
     if (user.role === "agent") {
       logoutAgent(user);
     }
@@ -131,6 +117,7 @@ export const logout = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // google login
 export const googleLogin = async (req, res) => {

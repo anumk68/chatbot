@@ -8,7 +8,7 @@ export default function AllCustomers() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const customersPerPage = 12;
+  const customersPerPage = 7;
   const API_URL = import.meta.env.VITE_NODE_BASE_URL + "/api";
   const chatbotId = localStorage.getItem("chatbotId");
 
@@ -73,7 +73,7 @@ const filteredCustomers = customers.filter((c) => {
 
       {/* Search */}
       <div className="mt-6 flex justify-start">
-        <div className="relative w-full md:w-1/3">
+        <div className="relative w-full md:w-1/2">
           <Search
             size={18}
             className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"

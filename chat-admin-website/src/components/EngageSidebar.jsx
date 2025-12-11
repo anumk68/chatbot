@@ -9,7 +9,7 @@ const EngageSidebar = ({ isOpen, onClose }) => {
   const menuItems = [
     { name: "Traffic", badge: 0, label: "customers", path: "/traffics" },
     { name: "Campaigns", badge: 5, label: "active", path: "/campaigns" },
-    { name: "Goals", badge: 0, label: "active", path: "/goals" },
+    // { name: "Goals", badge: 0, label: "active", path: "/goals" },
   ];
 
   const handleClick = (item) => {

@@ -39,7 +39,6 @@ const AutomateSidebar = ({ isOpen, onClose }) => {
       name: "Knowledge hub",
       hasDropdown: true,
       children: [
-        { name: "All sources"},
         { name: "Websites List"},
         { name: "Guidelines of pdf" },
       ],

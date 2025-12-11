@@ -1,26 +1,31 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "path";
+import path from "path";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"), 
+    },
+  },
+
+  server: {
+    origin: "http://localhost:5173",
+    cors: true,
+  },
+
   build: {
     outDir: "dist",
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "index.html"), 
+        main: path.resolve(__dirname, "index.html"),
       },
       optimizeDeps: {
         include: ["jwt-decode"],
       },
     },
-
-    
-    server: {
-      origin: "http://localhost:5173", 
-      cors: true,
-    },
   },
 });
-  

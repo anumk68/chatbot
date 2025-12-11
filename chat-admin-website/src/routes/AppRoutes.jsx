@@ -41,6 +41,7 @@ import AllCustomers from "../pages/admin/AllCustomers.jsx";
 import ALlWebsites from "../pages/admin/AllWebsites.jsx";
 import AllMessages from "../pages/admin/AllMessages.jsx";
 import Traffic from '../pages/admin/engage/Traffic.jsx';
+import Compaign from "../pages/admin/engage/Compaign.jsx";
 
 /* Agent Imports */
 import AgentSideBar from "../components/AgentSideBar";
@@ -174,6 +175,16 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/campaigns"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <SideBar>
+              <Compaign />
+            </SideBar>
+          </ProtectedRoute>
+        }
+      />
 
       {/* ---------------- SETTINGS ROUTES ---------------- */}
       <Route
@@ -243,6 +254,7 @@ const AppRoutes = () => {
         <Route path="all-customers" element={<AllCustomers />} />
         <Route path="website-list" element={<ALlWebsites />} />
         <Route path="traffics" element={<Traffic />} />
+        <Route path="compaigns" element={<Compaign />} />
         <Route path="tags" element={<Tags />} />
         <Route path="sales-tracker" element={<SalesTracker />} />
       </Route>
