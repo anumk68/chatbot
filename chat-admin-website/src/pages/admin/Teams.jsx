@@ -94,31 +94,32 @@ export default function TeamPage() {
       .toUpperCase();
   };
 
-const normalizeAgent = (a) => {
-  return {
-    id: a.id ?? a._id ?? null,
-    name: a.name || a.full_name || "Unnamed",
-    email: a.email || "",
-    role: a.role || "Agent",
-    groups: a.groups
-      ? Array.isArray(a.groups)
-        ? a.groups
-        : tryParseJSON(a.groups)
-      : [],
-    status: a.status || (a.is_invited ? "Pending" : "Offline"), // ← yahan "Pending" status set karo
-    statusColor:
-      a.statusColor ||
-      (a.status === "Accepting chats"
-        ? "green"
-        : a.status === "Invited" || a.status === "Pending"
-        ? "yellow"
-        : "gray"),
-    chatLimit: a.chat_limit ?? a.chatLimit ?? 0,
-    lastSeen: a.last_seen ?? a.lastSeen ?? "-",
-    isCurrentUser: a.is_current_user || a.isCurrent || false,
-    isInvited: a.is_invited || false,
+  const normalizeAgent = (a) => {
+    return {
+      id: a.id ?? a._id ?? null,
+      name: a.name || a.full_name || "Unnamed",
+      email: a.email || "",
+      role: a.role || "Agent",
+      groups: a.groups
+        ? Array.isArray(a.groups)
+          ? a.groups
+          : tryParseJSON(a.groups)
+        : [],
+      status: a.status || (a.is_invited ? "Pending" : "Offline"),
+      statusColor:
+        a.statusColor ||
+        (a.status === "Accepting chats"
+          ? "green"
+          : a.status === "Invited" || a.status === "Pending"
+          ? "yellow"
+          : "gray"),
+
+      chatLimit: a.chat_limit ?? a.chatLimit ?? 0,
+      lastSeen: a.last_seen ?? a.lastSeen ?? "-",
+      isCurrentUser: a.is_current_user || a.isCurrent || false,
+      isInvited: a.is_invited || false,
+    };
   };
-};
 
   function tryParseJSON(str) {
     try {
@@ -430,6 +431,8 @@ const normalizeAgent = (a) => {
       chatbot_id: chatbotId,
     };
 
+    console.log("payload",payload)
+
     try {
       const res = await axios.post(`${API_BASE}/create/${chatbotId}`, payload);
 
@@ -471,7 +474,9 @@ const normalizeAgent = (a) => {
       {/* Left Panel */}
       <div className="flex-1 p-6 flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-blue-500">Digi Rush Chat Team</h1>
+          <h1 className="text-2xl font-bold text-blue-500">
+            Digi Rush Chat Team
+          </h1>
           <button
             onClick={() => toast.success("Invite settings clicked")}
             className="text-lg text-blue-600 hover:underline"

@@ -49,7 +49,7 @@ const AgentLoginForm = ({
             alt="Logo"
             className="mx-auto w-20 h-20 mb-2"
           />
-          <h2 className="text-2xl font-bold text-gray-800"> Login Form</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Login DigiRush Chat</h2>
         </div>
 
         {/* Form */}

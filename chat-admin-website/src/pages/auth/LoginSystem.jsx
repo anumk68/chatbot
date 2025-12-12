@@ -7,8 +7,8 @@ import SignupForm from "./SignupForm";
 import ForgotPassword from "./ForgotPassword";
 import { toast } from "react-toastify";
 
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase";
+import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { auth, googleProvider, facebookProvider } from "../../firebase";
 import axios from "axios";
 
 const LoginSystem = ({ initialPanel = "admin" }) => {
@@ -43,10 +43,10 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     wrapper.classList.add(activePanel === "admin" ? "rotate-y" : "rotate-x-up");
   }, [activePanel]);
 
-  // Google Login
+  // =================== Google Login ===================
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, googleProvider);
       const firebaseToken = await result.user.getIdToken();
 
       const res = await axios.post(`${API_URL}/api/auth/google-login`, {
@@ -63,7 +63,6 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
         };
 
         dispatch(setUser(userData));
-
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("authToken", res.data.token);
         localStorage.setItem("token", res.data.token);
@@ -78,7 +77,52 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     }
   };
 
-  // Normal Login
+  // =================== Facebook Login ===================
+  const handleFacebookLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, facebookProvider);
+      const credential = FacebookAuthProvider.credentialFromResult(result);
+      if (!credential) throw new Error("No credential returned from Facebook login");
+
+      const token = credential.accessToken;
+      const user = result.user;
+
+      console.log("Facebook user:", user);
+      console.log("Access token:", token);
+
+      // Optional: send Firebase token to your backend
+      const firebaseToken = await user.getIdToken();
+      const res = await axios.post(`${API_URL}/api/auth/facebook-login`, { token: firebaseToken });
+
+      if (res.data.token) {
+        const userData = {
+          token: res.data.token,
+          name: res.data.name,
+          email: res.data.email,
+          role: res.data.role,
+          chatbot_id: res.data.chatbot_id,
+        };
+
+        dispatch(setUser(userData));
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("authToken", res.data.token);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("chatbotId", res.data.chatbot_id);
+
+        toast.success("Logged in with Facebook");
+        navigate("/admin-dashboard");
+      }
+    } catch (error) {
+      if (error.code === "auth/popup-closed-by-user") {
+        toast.error("You closed the popup before completing login.");
+      } else {
+        console.error("Facebook login error:", error);
+        toast.error(error.message);
+      }
+    }
+  };
+
+  // =================== Normal Login ===================
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -94,7 +138,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     }
   };
 
-  // Signup
+  // =================== Signup ===================
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password, confirmPassword } = signupForm;
@@ -131,6 +175,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
             setActivePanel={setActivePanel}
             setPanelErrors={setPanelErrors}
             handleGoogleLogin={handleGoogleLogin}
+            handleFacebookLogin={handleFacebookLogin} // Pass Facebook handler
             API_URL={API_URL}
           />
 

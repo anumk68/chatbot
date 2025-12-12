@@ -10,7 +10,6 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       {" "}
-      {/* Pass queryClient to QueryClientProvider */}
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>

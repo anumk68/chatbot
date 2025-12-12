@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { forgotPasswordAPI } from "../../api/auth/authApi.js"; // Correct import
+import { forgotPasswordAPI } from "../../api/auth/authApi.js"; 
+import logo from '../../assets/digi-logo.png'
 
 const ForgotPassword = ({ activePanel, setActivePanel }) => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
     setError("");
 
     try {
-      const res = await forgotPasswordAPI(email); // Pass email directly
+      const res = await forgotPasswordAPI(email); 
       if (res.success) {
         setMessage(res.message || "Password reset link sent to your email!");
       } else {
@@ -40,11 +41,11 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
           : "opacity-0 pointer-events-none"
       }`}
     >
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/906/906343.png"
-        alt="Logo"
-        className="login-logo"
-      />
+     <img
+              src={logo}
+              alt="Logo"
+              className="w-[40%] h-16 mx-auto bg-white p-2 rounded-full"
+            />
       <h2 className="login-title text-cyan-600">Forgot Password</h2>
 
       <form onSubmit={handleSendResetLink}>

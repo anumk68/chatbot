@@ -1,7 +1,8 @@
+// LoginForm.jsx
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
-import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, facebookProvider } from "../../firebase";
+import { faEnvelope, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import logo from '../../assets/digi-logo.png'
 
 const LoginForm = ({
   activePanel,
@@ -12,125 +13,101 @@ const LoginForm = ({
   setPanelErrors,
   setActivePanel,
   handleGoogleLogin,
+  handleFacebookLogin
 }) => {
-  // Facebook Login
-  const handleFacebookLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, facebookProvider);
-      const token = await result.user.getIdToken();
-
-      // Send token to your backend
-      const res = await fetch(`${API_URL}/api/auth/facebook-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-
-      const data = await res.json();
-
-      if (data.token) {
-        localStorage.setItem("user", JSON.stringify(data));
-        window.location.href = "/admin-dashboard";
-      }
-    } catch (err) {
-      console.error("Facebook login error:", err);
-      alert("Facebook login failed");
-    }
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div
-      className={`form-panel admin-panel ${
-        activePanel === "admin"
-          ? "opacity-100 z-10"
-          : "opacity-0 pointer-events-none"
-      }`}
+      className={`bg-gradient-to-t from-blue-800 to-blue-500 admin-panel transition-opacity duration-500 ${
+        activePanel === "admin" ? "opacity-100 z-10" : "opacity-0 pointer-events-none"
+      } p-8 rounded-xl shadow-lg max-w-md mx-auto mt-10`}
     >
-      <div>
+      <div className="text-center mb-6">
         <img
-          src="https://cdn-icons-png.flaticon.com/512/906/906343.png"
+          src={logo}
           alt="Logo"
-          className="login-logo"
+          className="w-[40%] h-16 mx-auto bg-white p-2 rounded-full"
         />
-        <h2 className="login-title"> Login Form</h2>
-
-        <form onSubmit={handleSubmit}>
-          <div className="login-input-group">
-            <FontAwesomeIcon icon={faEnvelope} className="login-input-icon" />
-            <input
-              type="email"
-              placeholder="Email address"
-              className="login-input"
-              value={adminForm.email}
-              onChange={(e) =>
-                setAdminForm({ ...adminForm, email: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="login-input-group">
-            <FontAwesomeIcon icon={faLock} className="login-input-icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              className="login-input"
-              value={adminForm.password}
-              onChange={(e) =>
-                setAdminForm({ ...adminForm, password: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <button type="submit" className="login-btn login-btn-white">
-            Login
-          </button>
-
-          <div className="mt-4 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                className="w-5 h-5"
-              />
-              <span className="text-gray-700 font-medium">
-                Continue with Google
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleFacebookLogin}
-              className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:shadow-lg transition "
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
-                className="w-5 h-5"
-              />
-              <span className="text-white font-medium">
-                Continue with Facebook
-              </span>
-            </button>
-          </div>
-
-          {loading && (
-            <p className="text-sm text-blue-600 mt-2">Logging in...</p>
-          )}
-        </form>
+        <h2 className="text-2xl font-bold text-white mt-2">Login With DigiChat</h2>
       </div>
 
-      <div className="flex justify-between px-2 mt-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="email"
+            placeholder="Email address"
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={adminForm.email}
+            onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
+            required
+          />
+        </div>
+
+        <div className="relative">
+          <FontAwesomeIcon icon={faLock} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={adminForm.password}
+            onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-medium shadow-md"
+        >
+          Login
+        </button>
+      </form>
+
+      <div className="mt-4 flex flex-col gap-3">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            className="w-5 h-5"
+          />
+          <span className="text-gray-700 font-medium">Continue with Google</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleFacebookLogin} 
+          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:shadow-lg transition"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
+            className="w-5 h-5"
+          />
+          <span className="text-white font-medium">Continue with Facebook</span>
+        </button>
+      </div>
+
+      {loading && <p className="text-sm text-blue-400 mt-2 text-center">Logging in...</p>}
+
+      <div className="flex justify-between px-2 mt-6 text-sm">
         <button
           type="button"
           onClick={() => {
             setActivePanel("forgot");
             setPanelErrors((prev) => ({ ...prev, forgot: "" }));
           }}
-          className="flex items-center justify-center gap-2 text-white hover:underline text-sm"
+          className="text-white-300 hover:underline text-base"
         >
           Forgot Password?
         </button>
@@ -140,7 +117,7 @@ const LoginForm = ({
             setActivePanel("signup");
             setPanelErrors((prev) => ({ ...prev, signup: "" }));
           }}
-          className="flex items-center justify-center gap-2 text-white hover:underline text-sm"
+          className="text-white-300 hover:underline text-base"
         >
           Sign Up
         </button>

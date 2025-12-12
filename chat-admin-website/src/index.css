@@ -35,6 +35,10 @@
   width: 100%;
   height: 100%;
 }
+.flip-wrapper.rotate-x-up{
+   position: absolute;
+  top: 0%;
+}
 
 .form-panel {
   backface-visibility: hidden;
@@ -133,13 +137,18 @@
 }
 
 .login-btn-primary {
-  background-color: #06b6d4;
+  background: linear-gradient(to left, #1e3a8a, #3b82f6); /* from-blue-800 to-blue-500 */
   color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.3s ease;
 }
 
 .login-btn-primary:hover {
-  background-color: #0891b2;
+  background: linear-gradient(to left, #3b82f6, #1e3a8a); /* reverse gradient on hover */
 }
+
 
 .login-btn-white {
   background-color: white;

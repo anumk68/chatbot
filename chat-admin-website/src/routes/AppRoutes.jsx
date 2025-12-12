@@ -50,7 +50,7 @@ import AgentChats from "../pages/agent/AgentChats";
 
 /* Auth & ProtectedRoute */
 import ProtectedRoute from "./ProtectedRoute";
-import ResetPassword from "../pages/auth/reset-password";
+import ResetPassword from "../pages/auth/ResetPassword.jsx";
 import AgentLoginSystem from "../pages/auth/agent/AgentLoginSystem.jsx";
 import LoginForm from "../pages/auth/LoginForm.jsx";
 
@@ -59,7 +59,8 @@ const AppRoutes = () => {
     <Routes>
       {/* Public / Auth Routes */}
       <Route path="/" element={<LoginSystem />} />
-      <Route path="/:cj/reset-password" element={<ResetPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+
       <Route path="/agent-login" element={<AgentLoginSystem />} />
       <Route path="/agent-signup" element={<AgentLoginSystem />} />
 
