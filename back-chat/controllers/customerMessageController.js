@@ -3,7 +3,6 @@ import db from "../config/db.js";
 
 import { getIO } from "../sockets/chatSocket.js";
 
-
 /**  * Save or update pre-chat customer data to DB (customers table)   */
 export const saveCustomerData = async (req, res) => {
   try {
@@ -17,7 +16,8 @@ export const saveCustomerData = async (req, res) => {
       });
     }
 
-    const temp_user_id = "temp_" + Date.now() + Math.floor(Math.random() * 1000);
+    const temp_user_id =
+      "temp_" + Date.now() + Math.floor(Math.random() * 1000);
     const jsonString = JSON.stringify(custom_json || {});
 
     const [result] = await db.query(
@@ -68,8 +68,6 @@ export const saveCustomerData = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 // Get online customers (status = 'active')
 export const getOnlineCustomers = async (req, res) => {
@@ -167,14 +165,19 @@ export const agentDisconnect = async (req, res) => {
       "UPDATE users SET status='inactive' WHERE id=? AND role='agent'",
       [agent_id]
     );
-    console.log(`Agent ${agent_id} marked inactive in DB`);
 
-    const socket = getIO();
-    socket.emit("agent_offline", { agent_id });
+    const io = getIO();
+    io.emit("agent_offline", { agent_id });
 
-    return res.json({ success: true, message: "Agent marked inactive" });
+    return res.json({
+      success: true,
+      message: "Agent marked inactive",
+    });
   } catch (err) {
     console.error("disconnectAgent error:", err);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

@@ -192,7 +192,7 @@ export default function AllMessages() {
                 {activeUser?.customer_name?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-sm font-semibold truncate uppercase">
+                <h2 className="text-sm font-semibold truncate capitalize ">
                   {activeUser?.customer_name}
                 </h2>
                 <p className="text-xs text-gray-500">Assigned chat</p>

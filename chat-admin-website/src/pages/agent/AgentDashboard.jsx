@@ -38,7 +38,7 @@ const AgentDashboard = ({ agent }) => {
     if (!agentId) return;
 
     const handleAssignment = (assignment) => {
-      console.log("📢 Customer Assigned to you:", assignment);
+      console.log(" Customer Assigned to you:", assignment);
 
       toast.info(`${assignment.customer_name} assigned to you`);
 

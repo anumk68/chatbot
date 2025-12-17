@@ -5,7 +5,17 @@ export const createICICIPayment = async (req, res) => {
   try {
     const { agentCount, chatbotId, emails, role, group } = req.body;
 
-    const amount = agentCount * 199; // ₹199 / agent
+    if (!agentCount || agentCount < 1) {
+      return res.status(400).json({ message: "Invalid agent count" });
+    }
+
+    // 💲 $9 per agent → INR
+    const USD_TO_INR = 83;
+    const PRICE_PER_AGENT_USD = 9;
+
+    const amount =
+      agentCount * PRICE_PER_AGENT_USD * USD_TO_INR; // INR
+
     const referenceNo = `AGENT_${Date.now()}`;
 
     await db.query(
@@ -38,12 +48,19 @@ export const createICICIPayment = async (req, res) => {
       `?merchantid=${process.env.ICICI_MERCHANT_ID}` +
       `&encdata=${encodeURIComponent(encData)}`;
 
-    res.json({ paymentUrl });
+    res.json({
+      paymentUrl,
+      debug: {
+        amountINR: amount,
+        amountUSD: agentCount * PRICE_PER_AGENT_USD
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "ICICI payment init failed" });
   }
 };
+
 
 // ICICI SUCCESS / FAILURE CALLBACK
 export const iciciPaymentResponse = async (req, res) => {
