@@ -40,7 +40,7 @@ import InstallLiveChat from "../pages/admin/settingstabs/InstallLiveChat";
 import AllCustomers from "../pages/admin/AllCustomers.jsx";
 import ALlWebsites from "../pages/admin/AllWebsites.jsx";
 import AllMessages from "../pages/admin/AllMessages.jsx";
-import Traffic from '../pages/admin/engage/Traffic.jsx';
+import Traffic from "../pages/admin/engage/Traffic.jsx";
 import Compaign from "../pages/admin/engage/Compaign.jsx";
 
 /* Agent Imports */
@@ -53,13 +53,14 @@ import ProtectedRoute from "./ProtectedRoute";
 import ResetPassword from "../pages/auth/ResetPassword.jsx";
 import AgentLoginSystem from "../pages/auth/agent/AgentLoginSystem.jsx";
 import LoginForm from "../pages/auth/LoginForm.jsx";
+import GroupChat from "../pages/agent/GroupChat.jsx";
 
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Public / Auth Routes */}
       <Route path="/" element={<LoginSystem />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route path="/agent-login" element={<AgentLoginSystem />} />
       <Route path="/agent-signup" element={<AgentLoginSystem />} />
@@ -278,6 +279,16 @@ const AppRoutes = () => {
           <ProtectedRoute allowedRoles={["agent"]}>
             <AgentSideBar>
               <AgentChats />
+            </AgentSideBar>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/group-chats"
+        element={
+          <ProtectedRoute allowedRoles={["agent"]}>
+            <AgentSideBar>
+              <GroupChat />
             </AgentSideBar>
           </ProtectedRoute>
         }

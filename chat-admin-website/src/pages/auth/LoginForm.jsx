@@ -1,4 +1,3 @@
-// LoginForm.jsx
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -66,9 +65,9 @@ const LoginForm = ({
 
         <button
           type="submit"
-          className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-medium shadow-md"
+          className="w-full py-2 rounded-lg bg-[#ff2828] hover:bg-blue-700 transition text-white font-medium shadow-md cursor-pointer"
         >
-          Login
+          Login Now
         </button>
       </form>
 
@@ -76,7 +75,7 @@ const LoginForm = ({
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border"
+          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border cursor-pointer"
         >
           <img
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -88,13 +87,13 @@ const LoginForm = ({
         <button
           type="button"
           onClick={handleFacebookLogin} 
-          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-blue-600 text-white shadow-md hover:shadow-lg transition"
+          className="w-full flex items-center justify-center gap-3 py-2 rounded-lg bg-white shadow-md hover:shadow-lg transition border cursor-pointer"
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
             className="w-5 h-5"
           />
-          <span className="text-white font-medium">Continue with Facebook</span>
+          <span className="text-gray-700 font-medium">Continue with Facebook</span>
         </button>
       </div>
 
@@ -107,7 +106,7 @@ const LoginForm = ({
             setActivePanel("forgot");
             setPanelErrors((prev) => ({ ...prev, forgot: "" }));
           }}
-          className="text-white-300 hover:underline text-base"
+          className="text-white-300 hover:underline text-base cursor-pointer"
         >
           Forgot Password?
         </button>
@@ -117,7 +116,7 @@ const LoginForm = ({
             setActivePanel("signup");
             setPanelErrors((prev) => ({ ...prev, signup: "" }));
           }}
-          className="text-white-300 hover:underline text-base"
+          className="text-white-300 hover:underline text-base cursor-pointer"
         >
           Sign Up
         </button>

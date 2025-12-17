@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/auth/authSlice.js";
 
+import GroupChatPanel from "./groupchat/GroupChatPanel.jsx";
+
 const API_BASE = import.meta.env.VITE_NODE_BASE_URL + "/api";
 
 export default function TeamPage() {
@@ -55,6 +57,54 @@ export default function TeamPage() {
   const [members, setMembers] = useState([null]);
 
   const [agentsList, setAgentsList] = useState([]);
+
+  // groups state
+  const [groupActionMenu, setGroupActionMenu] = useState(null);
+  const [editGroupModal, setEditGroupModal] = useState(false);
+  const [editGroupName, setEditGroupName] = useState("");
+  const [groupToEdit, setGroupToEdit] = useState(null);
+
+  const [showInviteSettings, setShowInviteSettings] = useState(false);
+
+  const handleEditGroup = (group) => {
+    setGroupToEdit(group);
+    setEditGroupName(group.name);
+    setEditGroupModal(true);
+  };
+
+  const handleUpdateGroup = async () => {
+    if (!editGroupName.trim()) return toast.error("Group name required");
+
+    try {
+      await axios.put(`${API_BASE}/groups/update/${groupToEdit.id}`, {
+        group_name: editGroupName,
+      });
+
+      setGroups((prev) =>
+        prev.map((g) =>
+          g.id === groupToEdit.id ? { ...g, name: editGroupName } : g
+        )
+      );
+
+      toast.success("Group updated");
+      setEditGroupModal(false);
+    } catch (err) {
+      toast.error("Failed to update group");
+    }
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    if (!window.confirm("Delete this group permanently?")) return;
+
+    try {
+      await axios.delete(`${API_BASE}/groups/delete/${groupId}`);
+      setGroups((prev) => prev.filter((g) => g.id !== groupId));
+      setSelectedGroup(null);
+      toast.success("Group deleted");
+    } catch (err) {
+      toast.error("Failed to delete group");
+    }
+  };
 
   // fetch agents for selection in modal
   useEffect(() => {
@@ -176,22 +226,26 @@ export default function TeamPage() {
         // Groups
         try {
           const gRes = await axios.get(`${API_BASE}/groups/${chatbotId}`);
-          const serverGroups = gRes.data?.groups ?? [];
-          setGroups(
-            serverGroups.map((g) => ({
-              id: g.id ?? g._id,
-              name: g.group_name, // ← FIXED
-              description: g.description ?? "",
-              members: g.members || [], // if backend sends only agent_id, convert to array: [g.agent_id]
-              activeMembers: g.activeMembers || 0,
-              totalChats: g.totalChats || 0,
-              goals: g.goals || 0,
-              satisfaction: g.satisfaction || "n/a",
-            }))
-          );
+          console.log("GROUP API RAW ", gRes.data);
 
-          if ((serverGroups ?? []).length > 0 && !selectedGroupForInvite) {
-            setSelectedGroupForInvite(serverGroups[0].name);
+          const serverGroups = Array.isArray(gRes.data?.data)
+            ? gRes.data.data
+            : [];
+
+          const normalizedGroups = serverGroups.map((g) => ({
+            id: g.group_id,
+            name: g.group_name,
+            members: Array.isArray(g.members)
+              ? g.members
+              : JSON.parse(g.members || "[]"),
+            activeMembers: g.total_members || 0,
+          }));
+
+          console.log("NORMALIZED GROUPS ", normalizedGroups);
+          setGroups(normalizedGroups);
+
+          if (normalizedGroups.length && !selectedGroupForInvite) {
+            setSelectedGroupForInvite(normalizedGroups[0].name);
           }
         } catch (e) {}
 
@@ -366,9 +420,37 @@ export default function TeamPage() {
 
   const handleSendInvites = async () => {
     const validEmails = inviteEmails.map((e) => e.trim()).filter(Boolean);
-    if (!validEmails.length)
+    if (!validEmails.length) {
       return toast.error("Please enter at least one email.");
+    }
+
     const chatbot = localStorage.getItem("chatbotId");
+
+    // 🔢 TOTAL AGENTS (existing + new)
+    const totalAgentsAfterInvite = agents.length + validEmails.length;
+
+    // 🔐 1 agent free, >1 paid
+    if (totalAgentsAfterInvite > 1) {
+      try {
+        // 👉 ICICI PAYMENT INIT
+        const payRes = await axios.post(`${API_BASE}/icici/create-payment`, {
+          agentCount: validEmails.length,
+          chatbotId: chatbot,
+          emails: validEmails, // save for post-payment invite
+          role: selectedRoleForInvite,
+          group: selectedGroupForInvite,
+        });
+
+        // 🔁 REDIRECT TO ICICI PAYMENT PAGE
+        window.location.href = payRes.data.paymentUrl;
+        return;
+      } catch (err) {
+        console.error(err);
+        return toast.error("Unable to redirect to payment gateway");
+      }
+    }
+
+    // ✅ FREE FLOW (ONLY 1 AGENT)
     const payload = {
       emails: validEmails,
       role: selectedRoleForInvite,
@@ -379,6 +461,7 @@ export default function TeamPage() {
 
     try {
       const res = await inviteAgents(payload);
+
       const added = validEmails.map((email, i) => ({
         id: `invited-${Date.now()}-${i}`,
         name: email.split("@")[0],
@@ -389,6 +472,7 @@ export default function TeamPage() {
         statusColor: "yellow",
         isInvited: true,
       }));
+
       setAgents((prev) => [...added, ...prev]);
       toast.success(res?.data?.message || "Invites sent successfully!");
       setShowInviteModal(false);
@@ -427,11 +511,11 @@ export default function TeamPage() {
 
     const payload = {
       group_name: groupName,
-      members: members.filter((m) => m !== null),
+      members: members.filter(Boolean),
       chatbot_id: chatbotId,
     };
 
-    console.log("payload",payload)
+    console.log("payload", payload);
 
     try {
       const res = await axios.post(`${API_BASE}/create/${chatbotId}`, payload);
@@ -444,6 +528,7 @@ export default function TeamPage() {
 
       // get all groups via api
       const allGroupsRes = await axios.get(`${API_BASE}/groups/${chatbotId}`);
+      console.log("allgroupsres", allGroupsRes);
       const serverGroups = allGroupsRes.data?.groups ?? [];
       setGroups(
         serverGroups.map((g) => ({
@@ -470,23 +555,66 @@ export default function TeamPage() {
 
   // ======= JSX RETURN =======
   return (
-    <div className="flex h-screen bg-white relative overflow-hidden">
+    <div className="flex flex-col md:flex-row w-full h-full bg-white relative overflow-hidden">
       {/* Left Panel */}
-      <div className="flex-1 p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-blue-500">
+      <div className="flex-1 p-4 md:p-6 flex flex-col">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 space-y-2 md:space-y-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-blue-500">
             Digi Rush Chat Team
           </h1>
           <button
-            onClick={() => toast.success("Invite settings clicked")}
-            className="text-lg text-blue-600 hover:underline"
+            onClick={() => setShowInviteSettings(true)}
+            className="text-sm sm:text-lg text-blue-600 hover:underline"
           >
             Invite settings ↗
           </button>
+          {showInviteSettings && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-2">
+              <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+                {/* Close Button */}
+                <button
+                  onClick={() => setShowInviteSettings(false)}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <h2 className="text-xl font-semibold mb-2">Invite via Link</h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  Share this link to invite agents to your chatbot
+                </p>
+
+                {/* URL Box */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}`}
+                    className="flex-1 border rounded-md p-2 text-sm bg-gray-50"
+                  />
+
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success("Invite link copied!");
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 cursor-pointer"
+                  >
+                    Copy
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-400 mt-3">
+                  Anyone with this link can request access.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-6 border-b pb-2 mb-4 select-none">
+        <div className="flex flex-wrap md:flex-nowrap space-x-2 md:space-x-6 border-b pb-2 mb-4 select-none">
           {["Agents", "Chatbots", "Groups", "Suspended"].map((tab) => (
             <button
               key={tab}
@@ -497,9 +625,7 @@ export default function TeamPage() {
                 setSelectedChatbot(null);
                 setSelectedGroup(null);
                 setSearchText("");
-                if (tab === "Suspended") {
-                  loadSuspendedAgents();
-                }
+                if (tab === "Suspended") loadSuspendedAgents();
               }}
               className={tabBtnClass(tab)}
             >
@@ -508,10 +634,10 @@ export default function TeamPage() {
           ))}
         </div>
 
-        {/* Search + Invite / Add */}
+        {/* Search + Invite */}
         {(currentTab === "Agents" || currentTab === "Chatbots") && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="relative w-1/3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+            <div className="relative w-full sm:w-1/3">
               <Search className="absolute left-2 top-2.5 text-gray-400 w-4 h-4" />
               <input
                 type="text"
@@ -532,18 +658,29 @@ export default function TeamPage() {
                   toast.success(`Add new ${currentTab.toLowerCase()}`);
                 }
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-lg hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm sm:text-lg hover:bg-blue-700 w-full sm:w-auto"
             >
               + Invite {currentTab.toLowerCase()}
             </button>
           </div>
         )}
 
+        {/* Groups New Button */}
+        {currentTab === "Groups" && (
+          <button
+            className="new-group bg-blue-600 cursor-pointer w-full sm:w-[200px] text-white px-5 py-3 flex items-center gap-2 font-semibold text-lg rounded hover:bg-blue-700 transition mb-5"
+            onClick={handlegroupModalOpen}
+          >
+            <Plus className="w-5 h-5" /> New Group
+          </button>
+        )}
+
         {/* Content List */}
-        <div className="overflow-auto flex-grow">
+        <div className="overflow-auto flex-1">
+          {/* Agents / Chatbots Add New */}
           {(currentTab === "Agents" || currentTab === "Chatbots") && (
             <div
-              className="grid grid-cols-12 items-center py-3 hover:bg-gray-50 cursor-pointer border-b mb-2"
+              className="grid grid-cols-1 items-center py-3 hover:bg-gray-50 cursor-pointer border-b mb-2"
               onClick={() => {
                 if (currentTab === "Agents") {
                   setShowInviteModal(true);
@@ -555,7 +692,7 @@ export default function TeamPage() {
                 }
               }}
             >
-              <div className="col-span-5 flex items-center space-x-3">
+              <div className="flex items-center space-x-3">
                 <div className="flex items-center justify-center w-10 h-10 border-2 border-gray-400 rounded-full">
                   <Plus className="w-4 h-4 text-gray-600" />
                 </div>
@@ -610,62 +747,92 @@ export default function TeamPage() {
             groups.map((group) => (
               <div
                 key={group.id}
-                onClick={() => handleSelectItem(group)}
-                className={`py-3 px-4 cursor-pointer rounded-md hover:bg-gray-100 transition ${
+                className={`group-card flex justify-between items-center p-4 rounded-lg mb-3 border hover:shadow transition cursor-pointer ${
                   selectedGroup?.id === group.id
-                    ? "bg-blue-50 border-blue-400 border"
-                    : ""
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200"
                 }`}
+                onClick={() => handleSelectItem(group)}
               >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold text-gray-800">{group.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {group.activeMembers}/{(group.members || []).length}{" "}
-                      accepting chats
-                    </p>
-                  </div>
-                  <div className="flex items-center -space-x-2">
-                    {(group.members || []).slice(0, 3).map((m, idx) => (
-                      <div
-                        key={idx}
-                        className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs border-2 border-white"
-                        title={getAgentNameById(m)}
-                      >
-                        {getAgentNameById(m)[0]}
-                      </div>
-                    ))}
-                    {(group.members || []).length - 3 > 0 && (
-                      <div className="w-6 h-6 bg-gray-300 text-gray-700 rounded-full flex items-center justify-center text-xs border-2 border-white">
-                        +{(group.members || []).length - 3}
-                      </div>
-                    )}
-                  </div>
+                {/* LEFT */}
+                <div>
+                  <p className="font-semibold text-gray-800 text-lg capitalize">
+                    {group.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {group.members.length} members
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  {group.description}
-                </p>
+
+                {/* RIGHT */}
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGroupActionMenu(
+                        groupActionMenu === group.id ? null : group.id
+                      );
+                    }}
+                    className="p-2 rounded hover:bg-gray-200"
+                  >
+                    <MoreVertical size={18} />
+                  </button>
+
+                  {groupActionMenu === group.id && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-50">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditGroup(group);
+                          setGroupActionMenu(null);
+                        }}
+                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      >
+                        ✏️ Edit
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteGroup(group.id);
+                          setGroupActionMenu(null);
+                        }}
+                        className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50"
+                      >
+                        🗑 Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
 
-          {/* GroupProfile panel: member names */}
-          {currentTab === "Groups" && selectedGroup && (
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Group Details</h2>
-              <p>
-                <strong>Name:</strong> {selectedGroup.name}
-              </p>
-              <p>
-                <strong>Description:</strong> {selectedGroup.description}
-              </p>
+          {editGroupModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-96">
+                <h3 className="text-lg font-semibold mb-4">Edit Group</h3>
 
-              <div className="mt-4">
-                <strong>Members:</strong>
-                <ul className="ml-4 list-disc">
-                  {(selectedGroup.members || []).map((m) => (
-                    <li key={m}>{getAgentNameById(m)}</li>
-                  ))}
-                </ul>
+                <input
+                  value={editGroupName}
+                  onChange={(e) => setEditGroupName(e.target.value)}
+                  className="w-full border p-2 rounded mb-4"
+                  placeholder="Group name"
+                />
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setEditGroupModal(false)}
+                    className="px-4 py-2 bg-gray-200 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUpdateGroup}
+                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -740,20 +907,9 @@ export default function TeamPage() {
                 isSelected={selectedAgent?.id === agent.id}
               />
             ))}
-          {currentTab === "Groups" && (
-            <button
-              className="new-group bg-blue-600 text-white px-5 py-3 flex items-center gap-2 font-semibold text-lg rounded hover:bg-blue-700 transition"
-              onClick={() => {
-                handlegroupModalOpen();
-              }}
-            >
-              <Plus className="w-5 h-5" />
-              New Group
-            </button>
-          )}
 
           {groupModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
               <div className="bg-white rounded-lg shadow-lg w-[450px] p-6 relative">
                 {/* FIXED CLOSE BUTTON */}
                 <button
@@ -852,15 +1008,15 @@ export default function TeamPage() {
 
       {/* Right Detail Panel */}
       <div
-        className={`relative top-0 right-0 h-full p-6 overflow-y-auto transition-all duration-300 shadow-lg ${
+        className={`fixed md:relative top-0 right-0 h-full p-6 overflow-y-auto transition-all duration-300 shadow-lg bg-white md:bg-transparent z-20 ${
           isDetailsOpen
-            ? "w-1/3 opacity-100"
+            ? "w-full md:w-1/3 opacity-100"
             : "w-0 opacity-0 pointer-events-none"
         }`}
         style={{ backdropFilter: isDetailsOpen ? "blur(6px)" : "none" }}
       >
         <button
-          className="absolute top-4 right-4 text-gray-600"
+          className="absolute top-4 right-4 text-gray-600 z-9"
           onClick={handleDetailsToggle}
         >
           <X className="w-6 h-6" />
@@ -879,7 +1035,11 @@ export default function TeamPage() {
               <ChatbotProfile chatbot={selectedChatbot} />
             )}
             {currentTab === "Groups" && selectedGroup && (
-              <GroupProfile group={selectedGroup} />
+              <GroupChatPanel
+                group={selectedGroup}
+                currentUser={owner || user}
+                chatbotId={localStorage.getItem("chatbotId")}
+              />
             )}
             {currentTab === "Suspended" && selectedAgent && (
               <SuspendedAgentProfile agent={selectedAgent} />
@@ -895,8 +1055,8 @@ export default function TeamPage() {
 
       {/* Invite Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-black  flex items-center justify-center z-50 opacity-95">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-[450px] relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-2">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
             <button
               onClick={() => setShowInviteModal(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 cursor-pointer"
@@ -971,7 +1131,7 @@ export default function TeamPage() {
               >
                 {groups.map((g) => (
                   <option key={g.id} value={g.name}>
-                    {g.name}
+                    {g.group_name}
                   </option>
                 ))}
               </select>

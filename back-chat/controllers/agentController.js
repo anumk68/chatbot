@@ -249,6 +249,53 @@ export const inviteAgents = async (req, res) => {
   }
 };
 
+export const inviteAgentsAfterPayment = async (req, res) => {
+  const { referenceNo } = req.body;
+
+  const [rows] = await db.query(
+    "SELECT * FROM payments WHERE reference_no=? AND status='SUCCESS'",
+    [referenceNo]
+  );
+
+  if (!rows.length) {
+    return res.status(403).json({ message: "Payment not verified" });
+  }
+
+  const payment = rows[0];
+  const emails = JSON.parse(payment.emails);
+
+  for (const email of emails) {
+    const token = jwt.sign(
+      {
+        email,
+        role: payment.role,
+        chatbotId: payment.chatbot_id
+      },
+      process.env.INVITE_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const link = `${process.env.FRONTEND_URL}/agent-signup?token=${token}`;
+    await sendInviteMail(email, link);
+
+    await db.query(
+      `INSERT INTO agent_invites
+      (email, chatbot_id, role, group_name, token, status)
+      VALUES (?, ?, ?, ?, ?, 'pending')`,
+      [
+        email,
+        payment.chatbot_id,
+        payment.role,
+        payment.group_name,
+        token
+      ]
+    );
+  }
+
+  res.json({ message: "Agents invited after payment" });
+};
+
+
 // fetch all agent by chatbotid
 export const getAgentsByChatbot = async (req, res) => {
   try {

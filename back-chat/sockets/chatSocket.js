@@ -138,6 +138,21 @@ export const initChatSocket = (server) => {
       }
     });
 
+    /* ================= GROUP CHAT (🔥 ADDED HERE) ================= */
+
+    socket.on("join_group", (groupId) => {
+      socket.join(`group_${groupId}`);
+      console.log(`👥 joined group_${groupId}`);
+    });
+
+    socket.on("leave_group", (groupId) => {
+      socket.leave(`group_${groupId}`);
+    });
+
+    socket.on("send_group_message", (payload) => {
+      io.to(`group_${payload.groupId}`).emit("receive_group_message", payload);
+    });
+
     // --- Agent sends message to conversation
     // Payload: { conversation_id, agent_id, message, file?, sender: 'agent' }
     socket.on("agent_message", async (payload) => {
@@ -156,6 +171,26 @@ export const initChatSocket = (server) => {
         console.log(`➡ Emitted agent_message_to_customer to room ${room}`);
       } catch (err) {
         console.error("agent_message handler error:", err);
+      }
+    });
+
+    socket.on("agent_leave", async ({ agent_id }) => {
+      try {
+        // Update DB to mark inactive
+        await db.query(
+          "UPDATE users SET status='inactive' WHERE id=? AND role='agent'",
+          [agent_id]
+        );
+
+        // Remove from onlineAgents map
+        delete onlineAgents[agent_id];
+
+        // Notify admin clients
+        io.emit("agent_offline", { agent_id });
+
+        console.log("Agent offline (leave):", agent_id);
+      } catch (err) {
+        console.error("agent_leave error:", err);
       }
     });
 

@@ -72,7 +72,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, role: user.role, chatbot_id: user.chatbot_id },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     if (user.role === "agent") {
@@ -154,7 +154,7 @@ export const googleLogin = async (req, res) => {
     const jwtToken = jwt.sign(
       { id: user.id, role: user.role, chatbot_id: user.chatbot_id },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     res.json({
@@ -207,7 +207,7 @@ export const facebookLogin = async (req, res) => {
     const jwtToken = jwt.sign(
       { id: user.id, role: user.role, chatbot_id: user.chatbot_id },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "1d" }
     );
 
     res.json({

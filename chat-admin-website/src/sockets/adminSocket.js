@@ -145,4 +145,13 @@ export const onNewAssignment = (callback) => {
   });
 };
 
+// Handle tab/window close
+window.addEventListener("beforeunload", () => {
+  if (socket.connected) {
+    const agentId = localStorage.getItem("agent_id");
+    socket.emit("agent_leave", { agent_id: agentId });
+    socket.disconnect();
+  }
+});
+
 export default socket;

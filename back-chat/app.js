@@ -24,6 +24,7 @@ import groupRoutes from './routes/groupRoutes.js'
 
 import campaignRoutes from './routes/campaignRoutes.js'
 
+import paymentRoutes from './routes/paymentRoutes.js'
 
 // import TrackRoutes from "./routes/track.js";
 
@@ -130,6 +131,8 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 //compaign
 app.use("/api/campaigns", campaignRoutes);
 
+// payment
+app.use("/api", paymentRoutes);
 
 
 export default app;

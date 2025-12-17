@@ -27,7 +27,6 @@ const AgentSideBar = ({ children }) => {
     navigate(path);
   };
 
-
   const user = useSelector((state) => state.auth.user);
   return (
     <div className="flex h-screen overflow-hidden">
@@ -50,47 +49,70 @@ const AgentSideBar = ({ children }) => {
           <nav className="flex flex-col items-center gap-2 mt-2">
             <button
               onClick={() => handleNavClick("/agent-dashboard")}
-              className="p-3 rounded-md hover:bg-gray-800"
+              className="p-3 rounded-md hover:bg-gray-800 relative group"
             >
               <Home size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Dashboard
+              </span>
             </button>
+
             <button
               onClick={() => handleNavClick("/agent-chats")}
-              className="p-3 rounded-md hover:bg-gray-800"
+              className="p-3 rounded-md hover:bg-gray-800 relative group"
             >
               <MessageSquare size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Chats
+              </span>
             </button>
+
             <button
               onClick={() => handleNavClick("/agent-trash")}
-              className="p-3 rounded-md hover:bg-gray-800"
+              className="p-3 rounded-md hover:bg-gray-800 relative group"
             >
               <Trash2 size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Trash
+              </span>
             </button>
+
             <button
               onClick={() => handleNavClick("/agent-users")}
-              className="p-3 rounded-md hover:bg-gray-800"
+              className="p-3 rounded-md hover:bg-gray-800 relative group"
             >
               <Users size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Users
+              </span>
+            </button>
+            <button
+              onClick={() => handleNavClick("/group-chats")}
+              className="p-3 rounded-md hover:bg-gray-800 relative group"
+            >
+              <MessageSquare size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Group Messages
+              </span>
             </button>
           </nav>
         </div>
 
         {/* BOTTOM */}
         <div className="flex flex-col items-center gap-2 mb-4">
-          <button
-            className="p-3 rounded-md hover:bg-gray-800 relative"
-            onClick={toggleSettingsSidebar}
-          >
-            <Settings size={20} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+          <button onClick={toggleSettingsSidebar}
+           className="p-3 rounded-md hover:bg-gray-800 relative group">
+          <Settings size={20} />
+            <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Settings
+            </span>
           </button>
-
-        <button
-  className="p-3 rounded-md hover:bg-gray-800"
-  onClick={() => handleNavClick("/agent-notifications")}
->
-  <Bell size={20} />
-</button>
+          <button className="p-3 rounded-md hover:bg-gray-800 relative group">
+            <Bell size={20} />
+            <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Notifications
+            </span>
+          </button>
 
           {/* User Display
           <div className="flex items-center gap-2 mt-2">

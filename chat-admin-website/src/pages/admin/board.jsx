@@ -99,7 +99,7 @@ const AnalyticsBoard = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 min-h-screen w-full">
+    <div className="p-4 md:p-6 bg-gray-100 w-full">
       {/* Dashboard Header */}
       <div className="bg-white rounded-xl shadow p-4 md:p-5 mb-6">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -342,7 +342,7 @@ const AnalyticsBoard = () => {
       </div>
 
       {/* History Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div className="bg-white rounded-xl shadow p-4 md:p-5 col-span-2">
           <h2 className="text-lg md:text-base font-semibold text-gray-700 mb-4">History</h2>
           <div className="flex flex-col items-center justify-center h-64 text-gray-400">
@@ -350,7 +350,7 @@ const AnalyticsBoard = () => {
             <p>No chat history</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

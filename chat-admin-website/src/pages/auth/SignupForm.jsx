@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import logo from '../../assets/digi-logo.png'
 
 const SignupForm = ({
   activePanel,
@@ -16,13 +17,11 @@ const SignupForm = ({
           : "opacity-0 pointer-events-none"
       }`}
     >
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/906/906343.png"
-        alt="Logo"
-        className="login-logo"
-      />
+     <img
+      className="w-[50%] bg-white h-18 mx-auto p-2 rounded-full"
+     src={logo} alt="" />
 
-      <h2 className="login-title text-cyan-600">Sign Up</h2>
+      <h2 className="login-title text-white">Create Form</h2>
 
       {/* noValidate is IMPORTANT */}
       <form onSubmit={handleSignupSubmit} noValidate>
@@ -89,15 +88,15 @@ const SignupForm = ({
           />
         </div>
 
-        <button type="submit" className="login-btn login-btn-primary mt-3">
+        <button type="submit" className="w-full py-2 rounded-lg bg-[#ff2828] hover:bg-blue-700 transition text-white font-medium shadow-md mt-3 cursor-pointer">
           Create Account
         </button>
 
-        <div className="text-center mt-4 pt-4">
+        <div className="text-center pt-4">
           <button
             type="button"
             onClick={() => setActivePanel("admin")}
-            className="login-link text-sm"
+            className=" text-white hover:underline text-base cursor-pointer"
           >
             Back to Login
           </button>

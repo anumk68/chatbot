@@ -13,6 +13,7 @@ export const loginUser = createAsyncThunk(
       }
 
       const userData = {
+        id: data.id,     
         token: data.token,
         email: data.email,
         name: data.name,

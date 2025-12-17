@@ -46,7 +46,7 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
               alt="Logo"
               className="w-[40%] h-16 mx-auto bg-white p-2 rounded-full"
             />
-      <h2 className="login-title text-cyan-600">Forgot Password</h2>
+      <h2 className="login-title text-white">Forgot Password</h2>
 
       <form onSubmit={handleSendResetLink}>
         <div className="login-input-group">
@@ -63,7 +63,7 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
 
         <button
           type="submit"
-          className="login-btn login-btn-primary mt-3"
+          className="w-full py-2 rounded-lg bg-[#ff2828] hover:bg-blue-700 transition text-white font-medium shadow-md cursor-pointer"
           disabled={loading}
         >
           {loading ? "Sending..." : "Send Reset Link"}
@@ -77,7 +77,7 @@ const ForgotPassword = ({ activePanel, setActivePanel }) => {
         <button
           type="button"
           onClick={() => setActivePanel("admin")}
-          className="login-link text-sm"
+          className="text-white hover:underline text-base cursor-pointer"
         >
           Back to Login
         </button>

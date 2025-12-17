@@ -36,10 +36,10 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
       <nav className="flex flex-col p-2 text-lg text-white overflow-y-auto h-[calc(100%-56px)]">
         {/* Summary Reports */}
         <div>
-          <button className="ml-6 px-3 py-2 rounded hover:bg-gray-800 text-left">
+          {/* <button className="ml-6 px-3 py-2 rounded hover:bg-gray-800 text-left">
             My saved views
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={() => toggleSection("summary")}
             className="w-full flex items-center px-3 py-2 rounded hover:bg-gray-800 text-left gap-2"
           >
@@ -59,7 +59,7 @@ const ReportsSidebar = ({ isOpen, onClose }) => {
                 Dashboard
               </button>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Chat Reports */}

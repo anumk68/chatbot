@@ -6,7 +6,7 @@ import {
   getAgentProfile,
   forgotAgentPassword,
   resetAgentPassword,
-  inviteAgents,getAgentsByChatbot,suspendAgent,restoreAgent,getSuspendedAgents,editAgentProfile
+  inviteAgents,getAgentsByChatbot,suspendAgent,restoreAgent,getSuspendedAgents,editAgentProfile,inviteAgentsAfterPayment
 } from "../controllers/agentController.js";
 import protect from "../middleware/agentAuth.js"; // Middleware to protect routes
 
@@ -18,6 +18,9 @@ router.post("/reset-password/:token", resetAgentPassword);
 
 // Invite agent route
 router.post("/invite", inviteAgents);
+
+router.post("/invite-after-payment", inviteAgentsAfterPayment);
+
 
 // Register agent route
 router.post("/register", registerAgent);

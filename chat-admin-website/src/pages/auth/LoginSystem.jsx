@@ -175,8 +175,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
             setActivePanel={setActivePanel}
             setPanelErrors={setPanelErrors}
             handleGoogleLogin={handleGoogleLogin}
-            handleFacebookLogin={handleFacebookLogin} // Pass Facebook handler
-            API_URL={API_URL}
+            handleFacebookLogin={handleFacebookLogin} 
           />
 
           <SignupForm

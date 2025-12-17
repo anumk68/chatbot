@@ -75,17 +75,19 @@ export default function AllMessages() {
   );
   const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
 
+  const activeUser = messages.find((m) => m.conversation_id === activeChat);
+
   return (
     <div className="w-full h-full flex md:flex-row flex-col bg-gray-50">
+      {/* ===== SIDEBAR (WhatsApp-style list) ===== */}
       <div
-        className={`md:w-1/3 w-full h-full md:h-auto bg-white border-r shadow-2xl flex flex-col transition-transform duration-300 ${
-          activeChat ? "translate-x-[-100%] md:translate-x-0" : "translate-x-0"
+        className={`w-full md:w-1/3 h-full bg-white border-r shadow-2xl flex flex-col transition-transform duration-300 ${
+          activeChat ? "-translate-x-full md:translate-x-0" : "translate-x-0"
         }`}
       >
-        <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md">
-          <h1 className="text-xl md:text-xl font-bold flex items-center gap-2">
-            <MessageSquare size={20} /> Conversations
-          </h1>
+        <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md flex items-center gap-2">
+          <MessageSquare size={20} />
+          <h1 className="text-lg font-bold">Chats</h1>
         </div>
 
         <div className="p-3">
@@ -101,36 +103,45 @@ export default function AllMessages() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Search customers..."
+              placeholder="Search or start new chat"
               className="w-full pl-10 pr-4 py-2 rounded-xl border bg-gray-100 shadow focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
         </div>
 
-        <div className="flex-1 h-full overflow-y-auto custom-scroll">
+        <div className="flex-1 overflow-y-auto custom-scroll">
           {currentMessages.map((msg) => (
             <div
               key={msg.conversation_id}
               onClick={() => openChat(msg.conversation_id)}
-              className={`flex items-center gap-3 px-4 py-4 cursor-pointer transition-all duration-200 rounded-xl ${
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all ${
                 activeChat === msg.conversation_id
-                  ? "bg-gradient-to-r from-blue-100 to-purple-100 shadow-inner border-l-4 border-blue-600"
+                  ? "bg-gradient-to-r from-blue-100 to-purple-100"
                   : "hover:bg-gray-50"
               }`}
             >
-              <div className="h-12 w-12 bg-blue-600 text-white text-lg font-bold rounded-full flex items-center justify-center shadow">
+              <div className="h-12 w-12 bg-blue-600 text-white text-lg font-bold rounded-full flex items-center justify-center">
                 {msg.customer_name?.charAt(0)?.toUpperCase()}
               </div>
-              <div className="flex-1">
-                <h3 className="text-gray-900 font-semibold text-sm md:text-base truncate capitalize">
-                  {msg.customer_name}
-                </h3>
-                <p className="text-gray-500 text-xs md:text-sm truncate">
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-sm truncate capitalize">
+                    {msg.customer_name}
+                  </h3>
+                  <span className="text-[10px] text-gray-400">
+                    {new Date(msg.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 truncate">
                   Assigned to: {msg.agent_name}
                 </p>
               </div>
             </div>
           ))}
+
           {filteredMessages.length === 0 && (
             <div className="p-6 text-center text-gray-400">
               No conversation found
@@ -142,17 +153,17 @@ export default function AllMessages() {
           <div className="flex justify-between items-center p-3 border-t">
             <button
               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              onClick={() => setCurrentPage((prev) => prev - 1)}
+              onClick={() => setCurrentPage((p) => p - 1)}
               disabled={currentPage === 1}
             >
               Previous
             </button>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs text-gray-500">
               Page {currentPage} of {totalPages}
             </span>
             <button
               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              onClick={() => setCurrentPage((prev) => prev + 1)}
+              onClick={() => setCurrentPage((p) => p + 1)}
               disabled={currentPage === totalPages}
             >
               Next
@@ -161,31 +172,37 @@ export default function AllMessages() {
         )}
       </div>
 
+      {/* ===== CHAT AREA (WhatsApp-style) ===== */}
       <div className="md:w-2/3 w-full h-full flex flex-col">
         {!activeChat ? (
-          <div className="flex-1 flex items-center justify-center text-gray-400 text-lg md:text-xl">
+          <div className="hidden md:flex flex-1 items-center justify-center text-gray-400">
             Select a conversation
           </div>
         ) : (
           <>
-            <div className="p-4 bg-white border-b flex items-center justify-between shadow-md">
+            {/* Header */}
+            <div className="p-4 bg-white border-b flex items-center gap-3 shadow-md">
               <button
-                className="md:hidden p-2 cursor-pointer hover:bg-gray-200 rounded-md transition"
+                className="md:hidden p-2 hover:bg-gray-200 rounded"
                 onClick={() => setActiveChat(null)}
               >
                 <ChevronLeft size={22} />
               </button>
-              <h2 className="text-lg md:text-xl uppercase truncate font-semibold text-gray-800">
-                {
-                  messages.find((m) => m.conversation_id === activeChat)
-                    ?.customer_name
-                }
-              </h2>
+              <div className="h-10 w-10 bg-blue-600 text-white font-bold rounded-full flex items-center justify-center">
+                {activeUser?.customer_name?.charAt(0)?.toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-sm font-semibold truncate uppercase">
+                  {activeUser?.customer_name}
+                </h2>
+                <p className="text-xs text-gray-500">Assigned chat</p>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-50 custom-scroll">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 custom-scroll">
               {loadingChat ? (
-                <div className="text-center text-gray-400 py-4 animate-pulse">
+                <div className="text-center text-gray-400 animate-pulse">
                   Loading chat...
                 </div>
               ) : (
@@ -195,32 +212,25 @@ export default function AllMessages() {
                   return (
                     <div
                       key={index}
-                      className={`flex w-full ${
-                        isAgent ? "justify-end" : "justify-start"
-                      }`}
+                      className={`flex ${isAgent ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-[100%] px-4 py-3 rounded-2xl shadow border transition
-                          ${
-                            isAgent
-                              ? "bg-blue-600 text-white border-blue-500 rounded-br-none"
-                              : "bg-gray-100 text-gray-900 border-gray-300 rounded-bl-none"
-                          }`}
+                        className={`max-w-[75%] px-3 py-2 rounded-2xl shadow border relative ${
+                          isAgent
+                            ? "bg-blue-600 text-white rounded-br-none"
+                            : "bg-gray-100 text-gray-900 rounded-bl-none"
+                        }`}
                       >
-                        <p
-                          className={`text-xs font-semibold mb-1 capitalize ${
-                            isAgent ? "text-white/90" : "text-gray-600"
-                          }`}
-                        >
+                        <p className={`text-[11px] font-semibold mb-1 capitalize ${
+                          isAgent ? "text-white/90" : "text-gray-600"
+                        }`}>
                           {chat.sender}
                         </p>
-
-                        <p className="text-sm whitespace-pre-wrap">
+                        <p className="text-sm whitespace-pre-wrap pr-8">
                           {chat.message}
                         </p>
-
-                        <p
-                          className={`text-[10px] mt-2 text-right ${
+                        <span
+                          className={`absolute bottom-1 right-2 text-[10px] ${
                             isAgent ? "text-blue-200" : "text-gray-500"
                           }`}
                         >
@@ -228,23 +238,24 @@ export default function AllMessages() {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
-                        </p>
+                        </span>
                       </div>
                     </div>
                   );
                 })
               )}
-              <div ref={messagesEndRef}></div>
+              <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 md:p-4 bg-white border-t flex gap-2 md:gap-3">
+            {/* Input (disabled – admin) */}
+            <div className="p-3 bg-white border-t flex gap-2">
               <input
                 type="text"
                 disabled
                 placeholder="Admin cannot send messages"
-                className="flex-1 p-3 rounded-full bg-gray-100 border text-gray-500 text-sm md:text-base"
+                className="flex-1 p-3 rounded-full bg-gray-100 border text-gray-500 text-sm"
               />
-              <button className="px-6 py-2 bg-blue-600 text-white rounded-full opacity-50 cursor-not-allowed text-sm md:text-base">
+              <button className="px-6 py-2 bg-blue-600 text-white rounded-full opacity-50 cursor-not-allowed">
                 Send
               </button>
             </div>

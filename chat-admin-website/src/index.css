@@ -16,6 +16,16 @@
   0% { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
+/* .bg-image {
+  background-image:
+    linear-gradient(to left, rgba(185, 189, 200, 0.8), rgba(59, 130, 246, 0.8)),
+    url('./assets/bodybg.jpg');
+  background-repeat: no-repeat;
+  background-size: 100%;
+  position: fixed;
+  width: 100%;
+  background-position: center;
+} */
 
 
 /* src/styles/login-system.css */
@@ -62,19 +72,20 @@
 }
 
 .admin-panel {
-  background: linear-gradient(to bottom right, #06b6d4, #0ea5e9);
+  background: linear-gradient(to left, #1e3a8a, #3b82f6);
   color: white;
   transform: rotateY(180deg);
 }
 
 .signup-panel {
-  background: white;
-  transform: rotateX(-180deg);
+  background: linear-gradient(to left, #1e3a8a, #3b82f6);
+  transform: rotateX(0deg);
 }
 
 .forgot-panel {
-  background: white;
-  transform: rotateX(180deg);
+  background: linear-gradient(to left, #1e3a8a, #3b82f6);
+  transform: rotateX(0deg);
+  transform: translateY(50%);
 }
 
 /* Animation classes */
@@ -83,7 +94,7 @@
 }
 
 .rotate-x-up {
-  transform: rotateX(-180deg);
+  transform: rotateX(0deg);
 }
 
 .rotate-x-down {
@@ -146,7 +157,7 @@
 }
 
 .login-btn-primary:hover {
-  background: linear-gradient(to left, #3b82f6, #1e3a8a); /* reverse gradient on hover */
+  background: linear-gradient(to left, #3b82f6, #1e3a8a); 
 }
 
 

@@ -96,61 +96,93 @@ const SideBar = ({ children }) => {
           <nav className="flex flex-col items-center gap-2 mt-2 ">
             <button
               onClick={() => handleNavClick("/admin-dashboard")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
               <Home size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Admin Dashboard
+              </span>
             </button>
+
             <button
               onClick={() => handleNavClick("/messages")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
               <MessageSquare size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Install Script
+              </span>
             </button>
 
-            <button onClick={()=>handleNavClick("/all-messages")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"> 
+            <button
+              onClick={() => handleNavClick("/all-messages")}
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
+            >
               <MessageCircle size={20} />
-              </button>
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                All Messages
+              </span>
+            </button>
+
             <button
               onClick={toggleEngageSidebar}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
               <Star size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Engage
+              </span>
             </button>
 
-            <button
+              <button
               onClick={toggleAutomateSidebar}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
-              <Zap size={20} />
+             <Zap size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Automate
+              </span>
             </button>
-            <button
+  <button
               onClick={() => handleNavClick("/assigncustomer")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
               <UserCheck size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Agent & Customer Dashboard
+              </span>
             </button>
-            <button
-              onClick={() => handleNavClick("/trash")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+          
+           <button
+                 onClick={() => handleNavClick("/trash")}
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
-              <Trash2 size={20} />
+             <Trash2 size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Trash
+              </span>
             </button>
 
-            <button
-              onClick={() => handleNavClick("/team")}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+
+  <button
+                 onClick={() => handleNavClick("/team")}
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
-           <Users size={20} />
+             <Users size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Teams
+              </span>
             </button>
 
-            <button
-              onClick={toggleReportsSidebar}
-              className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
+             <button
+                 onClick={toggleReportsSidebar}
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
             >
-              <BarChart3 size={20} />
+             <BarChart3 size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Reports
+              </span>
             </button>
-
             {/* <button
               onClick={() => handleNavClick("/grid")}
               className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
@@ -172,13 +204,16 @@ const SideBar = ({ children }) => {
             3 days
           </div>
 
-          <button
-            className="p-3 rounded-md hover:bg-gray-800 relative cursor-pointer"
-            onClick={toggleSettingsSidebar} //  Will now close/open settings
-          >
-            <Settings size={20} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full cursor-pointer"></span>
-          </button>
+  <button
+                 onClick={toggleSettingsSidebar}
+              className="p-3 rounded-md hover:bg-gray-800 relative group cursor-pointer"
+            >
+              <Settings size={20} />
+              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded-md bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Settings
+              </span>
+            </button>
+
 
           {/* <button
             className="p-3 rounded-md hover:bg-gray-800 cursor-pointer"
