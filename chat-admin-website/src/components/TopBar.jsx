@@ -136,11 +136,11 @@ const TopBar = ({ onCollapseToggle }) => {
           <p className="text-sm font-medium">2</p>
 
           {/* Invite Button */}
-          <button
-            type="button"
-            onClick={openModal}
-            className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded transition duration-200"
-          >
+         <button
+  type="button"
+  onClick={openModal}
+  className="hidden md:flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded transition duration-200"
+>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -156,7 +156,7 @@ const TopBar = ({ onCollapseToggle }) => {
                 d="M5 12h14m-7-7v14"
               />
             </svg>
-            <span className="text-lg font-medium">Invite</span>
+            <span className="text-lg font-medium">Invite Agents</span>
           </button>
         </div>
       </div>

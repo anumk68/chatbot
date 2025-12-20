@@ -1,13 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, registerUser, setUser } from "../../redux/auth/authSlice";
+import {
+  loginUser,
+  registerUser,
+  setUser,
+} from "../../redux/auth/authSlice";
+
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 import ForgotPassword from "./ForgotPassword";
-import { toast } from "react-toastify";
 
-import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { toast } from "react-toastify";
+import {
+  signInWithPopup,
+  FacebookAuthProvider,
+} from "firebase/auth";
 import { auth, googleProvider, facebookProvider } from "../../firebase";
 import axios from "axios";
 
@@ -18,16 +26,21 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     signup: "",
     forgot: "",
   });
-  const flipWrapperRef = useRef(null);
 
+  const flipWrapperRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const { status } = useSelector((state) => state.auth);
   const loading = status === "loading";
 
   const API_URL = import.meta.env.VITE_NODE_BASE_URL;
 
-  const [adminForm, setAdminForm] = useState({ email: "", password: "" });
+  const [adminForm, setAdminForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const [signupForm, setSignupForm] = useState({
     name: "",
     email: "",
@@ -39,8 +52,11 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
   useEffect(() => {
     const wrapper = flipWrapperRef.current;
     if (!wrapper) return;
+
     wrapper.classList.remove("rotate-y", "rotate-x-up");
-    wrapper.classList.add(activePanel === "admin" ? "rotate-y" : "rotate-x-up");
+    wrapper.classList.add(
+      activePanel === "admin" ? "rotate-y" : "rotate-x-up"
+    );
   }, [activePanel]);
 
   // =================== Google Login ===================
@@ -49,9 +65,10 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseToken = await result.user.getIdToken();
 
-      const res = await axios.post(`${API_URL}/api/auth/google-login`, {
-        token: firebaseToken,
-      });
+      const res = await axios.post(
+        `${API_URL}/api/auth/google-login`,
+        { token: firebaseToken }
+      );
 
       if (res.data.token) {
         const userData = {
@@ -81,18 +98,18 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
   const handleFacebookLogin = async () => {
     try {
       const result = await signInWithPopup(auth, facebookProvider);
-      const credential = FacebookAuthProvider.credentialFromResult(result);
-      if (!credential) throw new Error("No credential returned from Facebook login");
+      const credential =
+        FacebookAuthProvider.credentialFromResult(result);
 
-      const token = credential.accessToken;
-      const user = result.user;
+      if (!credential)
+        throw new Error("No credential returned from Facebook login");
 
-      console.log("Facebook user:", user);
-      console.log("Access token:", token);
+      const firebaseToken = await result.user.getIdToken();
 
-      // Optional: send Firebase token to your backend
-      const firebaseToken = await user.getIdToken();
-      const res = await axios.post(`${API_URL}/api/auth/facebook-login`, { token: firebaseToken });
+      const res = await axios.post(
+        `${API_URL}/api/auth/facebook-login`,
+        { token: firebaseToken }
+      );
 
       if (res.data.token) {
         const userData = {
@@ -128,9 +145,11 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
     try {
       const payload = await dispatch(loginUser(adminForm)).unwrap();
       toast.success(payload.message);
+
       localStorage.setItem("token", payload.token);
 
-      if (payload.role === "admin") navigate("/admin-dashboard");
+      if (payload.role === "admin")
+        navigate("/admin-dashboard");
       else navigate("/agent-dashboard");
     } catch (err) {
       setPanelErrors((prev) => ({ ...prev, admin: err }));
@@ -141,6 +160,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
   // =================== Signup ===================
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
+
     const { name, email, password, confirmPassword } = signupForm;
 
     if (!name.trim()) return toast.error("Name is required");
@@ -153,6 +173,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
       const payload = await dispatch(
         registerUser({ name, email, password, role: "admin" })
       ).unwrap();
+
       toast.success(payload.message || "Signup successful");
       setActivePanel("admin");
     } catch (err) {
@@ -175,7 +196,7 @@ const LoginSystem = ({ initialPanel = "admin" }) => {
             setActivePanel={setActivePanel}
             setPanelErrors={setPanelErrors}
             handleGoogleLogin={handleGoogleLogin}
-            handleFacebookLogin={handleFacebookLogin} 
+            handleFacebookLogin={handleFacebookLogin}
           />
 
           <SignupForm

@@ -1,9 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginSystem from "../pages/auth/LoginSystem";
-
-/* Admin Imports */
-import Board from "../pages/admin/board.jsx";
+/* Admin Imports */ import Board from "../pages/admin/board.jsx";
 import SideBar from "../components/SideBar";
 import ChatsPage from "../pages/admin/ChatsPage";
 import Archives from "../pages/admin/Archives";
@@ -42,259 +40,267 @@ import ALlWebsites from "../pages/admin/AllWebsites.jsx";
 import AllMessages from "../pages/admin/AllMessages.jsx";
 import Traffic from "../pages/admin/engage/Traffic.jsx";
 import Compaign from "../pages/admin/engage/Compaign.jsx";
-
-/* Agent Imports */
-import AgentSideBar from "../components/AgentSideBar";
+/* Agent Imports */ import AgentSideBar from "../components/AgentSideBar";
 import AgentDashboard from "../pages/agent/AgentDashboard";
 import AgentChats from "../pages/agent/AgentChats";
-
-/* Auth & ProtectedRoute */
-import ProtectedRoute from "./ProtectedRoute";
+/* Auth & ProtectedRoute */ import ProtectedRoute from "./ProtectedRoute";
 import ResetPassword from "../pages/auth/ResetPassword.jsx";
 import AgentLoginSystem from "../pages/auth/agent/AgentLoginSystem.jsx";
 import LoginForm from "../pages/auth/LoginForm.jsx";
 import GroupChat from "../pages/agent/GroupChat.jsx";
-
+import Main from "../pages/auth/Main.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public / Auth Routes */}
-      <Route path="/" element={<LoginSystem />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-
-      <Route path="/agent-login" element={<AgentLoginSystem />} />
-      <Route path="/agent-signup" element={<AgentLoginSystem />} />
-
-      <Route path="/google-login" element={<LoginSystem />} />
-      <Route path="/facebook-login" element={<LoginForm />} />
-
-      {/* ---------------- ADMIN ROUTES ---------------- */}
+      {" "}
+      {/* Welcome */}
+       <Route path="/" element={<Main/>} />
+      <Route path="/login" element={<LoginSystem initialPanel="admin" />} />{" "}
+      <Route path="/signup" element={<LoginSystem initialPanel="signup" />} />{" "}
+      <Route path="/reset-password" element={<ResetPassword />} />{" "}
+      <Route path="/agent-login" element={<AgentLoginSystem />} />{" "}
+      <Route path="/agent-signup" element={<AgentLoginSystem />} />{" "}
+      <Route path="/google-login" element={<LoginSystem />} />{" "}
+      <Route path="/facebook-login" element={<LoginForm />} />{" "}
+      {/* ---------------- ADMIN ROUTES ---------------- */}{" "}
       <Route
         path="/admin-dashboard"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Board />
-            </SideBar>
+              {" "}
+              <Board />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/messages"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <ChatsPage />
-            </SideBar>
+              {" "}
+              <ChatsPage />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/all-messages"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <AllMessages />
-            </SideBar>
+              {" "}
+              <AllMessages />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/assigncustomer"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <AssignCustomers />
-            </SideBar>
+              {" "}
+              <AssignCustomers />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/trash"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Archives />
-            </SideBar>
+              {" "}
+              <Archives />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/team"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Teams />
-            </SideBar>
+              {" "}
+              <Teams />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/users"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Users />
-            </SideBar>
+              {" "}
+              <Users />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
-      {/* Direct route for All Customers / Websites */}
+      />{" "}
+      {/* Direct route for All Customers / Websites */}{" "}
       <Route
         path="/all-customers"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <AllCustomers />
-            </SideBar>
+              {" "}
+              <AllCustomers />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
+      />{" "}
       <Route
         path="/website-list"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <ALlWebsites />
-            </SideBar>
+              {" "}
+              <ALlWebsites />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
+      />{" "}
       <Route
         path="/traffics"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Traffic />
-            </SideBar>
+              {" "}
+              <Traffic />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
+      />{" "}
       <Route
         path="/campaigns"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <Compaign />
-            </SideBar>
+              {" "}
+              <Compaign />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
-      {/* ---------------- SETTINGS ROUTES ---------------- */}
+      />{" "}
+      {/* ---------------- SETTINGS ROUTES ---------------- */}{" "}
       <Route
         path="/settings/*"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
+            {" "}
             <SideBar>
-              <SettingsLayout />
-            </SideBar>
+              {" "}
+              <SettingsLayout />{" "}
+            </SideBar>{" "}
           </ProtectedRoute>
         }
       >
-        <Route path="install-livechat" element={<InstallLiveChat />} />
-        <Route path="email-by-livechat" element={<EmailByHelpDesk />} />
-        <Route path="facebook-messenger" element={<FacebookMessenger />} />
-        <Route path="apple-messages" element={<AppleMessages />} />
-        <Route path="chat-page" element={<ChatPage />} />
-
-        {/* WebsiteWidget */}
-        <Route path="websitewidget/customization" element={<Customization />} />
-        <Route path="websitewidget/language" element={<Language />} />
-        <Route path="websitewidget/availability" element={<Availability />} />
+        {" "}
+        <Route path="install-livechat" element={<InstallLiveChat />} />{" "}
+        <Route path="email-by-livechat" element={<EmailByHelpDesk />} />{" "}
+        <Route path="facebook-messenger" element={<FacebookMessenger />} />{" "}
+        <Route path="apple-messages" element={<AppleMessages />} />{" "}
+        <Route path="chat-page" element={<ChatPage />} /> {/* WebsiteWidget */}{" "}
+        <Route path="websitewidget/customization" element={<Customization />} />{" "}
+        <Route path="websitewidget/language" element={<Language />} />{" "}
+        <Route path="websitewidget/availability" element={<Availability />} />{" "}
         <Route
           path="websitewidget/welcome-screen"
           element={<WelcomeScreen />}
-        />
-
-        {/* Forms */}
-        <Route path="forms/pre-chat" element={<PreChatForm />} />
-        <Route path="forms/ask-email" element={<AskForEmail />} />
-        <Route path="forms/post-chat" element={<PostChat />} />
-        <Route path="forms/ticket" element={<TicketForm />} />
-
-        {/* Engagement */}
-        <Route path="engagement/eye-catcher" element={<EyeCatcher />} />
-        <Route path="engagement/chat-button" element={<ChatButton />} />
+        />{" "}
+        {/* Forms */} <Route path="forms/pre-chat" element={<PreChatForm />} />{" "}
+        <Route path="forms/ask-email" element={<AskForEmail />} />{" "}
+        <Route path="forms/post-chat" element={<PostChat />} />{" "}
+        <Route path="forms/ticket" element={<TicketForm />} />{" "}
+        {/* Engagement */}{" "}
+        <Route path="engagement/eye-catcher" element={<EyeCatcher />} />{" "}
+        <Route path="engagement/chat-button" element={<ChatButton />} />{" "}
         <Route
           path="engagement/quality-showcase"
           element={<QualityShowcase />}
-        />
-
-        {/* Chat Settings */}
+        />{" "}
+        {/* Chat Settings */}{" "}
         <Route
           path="chatsettings/chat-assignment"
           element={<ChatAssignment />}
-        />
+        />{" "}
         <Route
           path="chatsettings/transcript-forwarding"
           element={<TranscriptForwarding />}
-        />
-        <Route path="chatsettings/file-sharing" element={<FileSharing />} />
+        />{" "}
+        <Route path="chatsettings/file-sharing" element={<FileSharing />} />{" "}
         <Route
           path="chatsettings/inactivity-timeouts"
           element={<InactivityTimeouts />}
-        />
-
-        {/* Security */}
-        <Route path="security/trusted-domains" element={<TrustedDomains />} />
-        <Route path="security/banned-customers" element={<BannedCustomer />} />
+        />{" "}
+        {/* Security */}{" "}
+        <Route path="security/trusted-domains" element={<TrustedDomains />} />{" "}
+        <Route path="security/banned-customers" element={<BannedCustomer />} />{" "}
         <Route
           path="security/credit-card-masking"
           element={<CreditCardMasking />}
-        />
-        <Route path="security/login-settings" element={<LoginSettings />} />
-
-        {/* Additional */}
-        <Route path="all-customers" element={<AllCustomers />} />
-        <Route path="website-list" element={<ALlWebsites />} />
-        <Route path="traffics" element={<Traffic />} />
-        <Route path="compaigns" element={<Compaign />} />
-        <Route path="tags" element={<Tags />} />
-        <Route path="sales-tracker" element={<SalesTracker />} />
-      </Route>
-
-      {/* ---------------- AGENT ROUTES ---------------- */}
+        />{" "}
+        <Route path="security/login-settings" element={<LoginSettings />} />{" "}
+        {/* Additional */}{" "}
+        <Route path="all-customers" element={<AllCustomers />} />{" "}
+        <Route path="website-list" element={<ALlWebsites />} />{" "}
+        <Route path="traffics" element={<Traffic />} />{" "}
+        <Route path="compaigns" element={<Compaign />} />{" "}
+        <Route path="tags" element={<Tags />} />{" "}
+        <Route path="sales-tracker" element={<SalesTracker />} />{" "}
+      </Route>{" "}
+      {/* ---------------- AGENT ROUTES ---------------- */}{" "}
       <Route
         path="/agent-dashboard"
         element={
           <ProtectedRoute allowedRoles={["agent"]}>
+            {" "}
             <AgentSideBar>
-              <AgentDashboard />
-            </AgentSideBar>
+              {" "}
+              <AgentDashboard />{" "}
+            </AgentSideBar>{" "}
           </ProtectedRoute>
         }
-      />
-
+      />{" "}
       <Route
         path="/agent-chats"
         element={
           <ProtectedRoute allowedRoles={["agent"]}>
+            {" "}
             <AgentSideBar>
-              <AgentChats />
-            </AgentSideBar>
+              {" "}
+              <AgentChats />{" "}
+            </AgentSideBar>{" "}
           </ProtectedRoute>
         }
-      />
+      />{" "}
       <Route
         path="/group-chats"
         element={
           <ProtectedRoute allowedRoles={["agent"]}>
+            {" "}
             <AgentSideBar>
-              <GroupChat />
-            </AgentSideBar>
+              {" "}
+              <GroupChat />{" "}
+            </AgentSideBar>{" "}
           </ProtectedRoute>
         }
-      />
+      />{" "}
     </Routes>
   );
 };
-
 export default AppRoutes;

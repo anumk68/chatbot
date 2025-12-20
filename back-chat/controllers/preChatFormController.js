@@ -8,7 +8,6 @@ export const getPreChatForm = async (req, res) => {
 
   try {
     const form = await FormModel.getFormByChatbotId(chatbotId);
-    console.log("Form from DB:", form);
 
     if (!form)
       return res

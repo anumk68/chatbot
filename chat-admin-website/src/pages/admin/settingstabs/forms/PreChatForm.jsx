@@ -233,6 +233,7 @@ const PreChatForm = () => {
           <span className="font-medium text-gray-700">
             Enable Pre-Chat Form
           </span>
+
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"

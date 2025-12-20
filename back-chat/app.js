@@ -20,25 +20,28 @@ import conversationsRouter from "./routes/conversations.js";
 import messageRoutes from "./routes/messages.js";
 
 import scriptRoutes from "./routes/script.js";
-import groupRoutes from './routes/groupRoutes.js'
+import groupRoutes from "./routes/groupRoutes.js";
 
-import campaignRoutes from './routes/campaignRoutes.js'
+import campaignRoutes from "./routes/campaignRoutes.js";
 
-import paymentRoutes from './routes/paymentRoutes.js'
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 // import TrackRoutes from "./routes/track.js";
 
 import analyticsRouter from "./routes/analytics.js";
+import email from "./routes/email.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middlewares
-app.use(cors({
-  origin: "*",
-  credentials: false
-}));
+app.use(
+  cors({
+    origin: "*",
+    credentials: false,
+  })
+);
 app.use(express.json());
 
 import activeCustomersRoutes from "./routes/active-cust.js";
@@ -63,9 +66,8 @@ app.use("/api", messageRoutes);
 
 app.use("/api/conversations", conversationsRouter);
 
-// create group 
+// create group
 app.use("/api", groupRoutes);
-
 
 // script route
 app.use("/api", scriptRoutes);
@@ -122,7 +124,6 @@ app.get("/api/messages/:conversation_id", async (req, res) => {
   }
 });
 
-
 app.use("/api/analytics", analyticsRouter);
 
 // health
@@ -134,5 +135,6 @@ app.use("/api/campaigns", campaignRoutes);
 // payment
 app.use("/api", paymentRoutes);
 
+app.use("/api", email);
 
 export default app;

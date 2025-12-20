@@ -63,13 +63,7 @@ const ChatsPage = () => {
     <div className="min-h-screen flex bg-gray-100">
       <ToastContainer />
 
-      <div className="md:hidden fixed top-0 left-0 w-full bg-white shadow-md z-40 flex items-center justify-between px-5 py-4">
-        <h1 className="text-xl font-bold text-gray-800">DigiChat Installer</h1>
-        <FiMenu
-          className="text-2xl text-gray-700"
-          onClick={() => setSidebarOpen(true)}
-        />
-      </div>
+     
 
       <aside
         className={`fixed md:relative z-50 md:z-auto inset-0 md:inset-auto w-64 bg-white shadow-xl border-r p-6 transition-transform transform ${
@@ -118,10 +112,10 @@ const ChatsPage = () => {
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"
         >
           <div className="lg:col-span-2 bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-200">
-            <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 text-center md:text-left">
+            <h1 className="text-[25px] md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 text-center md:text-left">
               Install DigiChat On Your Website
             </h1>
-            <p className="mt-3 text-gray-600 text-sm md:text-base">
+            <p className="mt-3 text-center text-gray-600 text-sm md:text-base">
               Paste this script before{" "}
               <span className="font-mono">&lt;/body&gt;</span>.
             </p>

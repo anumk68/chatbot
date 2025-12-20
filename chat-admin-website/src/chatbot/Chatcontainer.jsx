@@ -4,12 +4,11 @@ import ChatDashboard from "./ChatDashboard";
 import Form from "./Form";
 import axios from "axios";
 
-export default function ChatContainer({onClose}) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ChatContainer({ onClose }) {
+   const [isOpen, setIsOpen] = useState(false);
   const [customerData, setCustomerData] = useState(null);
-  const [formEnabled, setFormEnabled] = useState(null);
+  const [formEnabled, setFormEnabled] = useState(false);
   const [formData, setFormData] = useState(null);
-
   const API_URL = import.meta.env.VITE_NODE_BASE_URL + "/api";
   const chatbotId = localStorage.getItem("chatbotId");
 
@@ -66,22 +65,29 @@ export default function ChatContainer({onClose}) {
   };
 
   const handleCloseChat = () => {
-    setIsOpen(false); // CLOSE WIDGET (important)
+    setIsOpen(false);
+    setCustomerData(null);
   };
 
   if (formEnabled === null) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {!isOpen && <ChatIcon onClick={() => setIsOpen(true)} />}
+   <div className="fixed bottom-6 right-6 z-50">
+      
+      {!isOpen && (
+        <ChatIcon onClick={() => setIsOpen(true)} />
+      )}
 
       {isOpen && (
-        <div className="w-[360px] h-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div className="w-[360px] h-[520px] rounded-2xls overflow-hidden">
           {!customerData && formEnabled ? (
             <Form
               chatbotId={chatbotId}
               preloadedForm={formData}
-              onChatStart={handleChatStart}
+              onChatStart={(data) => {
+                setCustomerData(data);
+                localStorage.setItem("chat_customer", JSON.stringify(data));
+              }}
             />
           ) : (
             <ChatDashboard

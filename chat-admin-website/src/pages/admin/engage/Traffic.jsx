@@ -7,7 +7,7 @@ const Traffic = () => {
     Navigate("/messages")
   }
   return (
-    <div className="p-4 text-white min-h-screen overflow-hidden">
+    <div className="p-4 text-white overflow-hidden">
       <div className="flex flex-col gap-4">
         <img
           src={engage}
@@ -15,7 +15,7 @@ const Traffic = () => {
           className="w-[1000px] m-auto h-auto rounded"
         />
 
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+        <div className="flex-1 flex flex-col items-center justify-center text-center ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

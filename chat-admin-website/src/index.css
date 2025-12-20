@@ -74,7 +74,7 @@
 .admin-panel {
   background: linear-gradient(to left, #1e3a8a, #3b82f6);
   color: white;
-  transform: rotateY(180deg);
+  transform: rotateY(0deg);
 }
 
 .signup-panel {
@@ -90,8 +90,77 @@
 
 /* Animation classes */
 .rotate-y {
-  transform: rotateY(180deg);
+  transform: rotateY(0deg);
 }
+.chaticon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatdots {
+  display: none;
+  gap: 4px;
+  transition: .5s ease forwards;
+}
+
+.chaticon:hover .chatsvg {
+  display: none;
+}
+
+.chaticon:hover .chatdots {
+  display: flex;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: bounce 0.8s infinite ease-in-out both;
+}
+
+.dot-1 { animation-delay: 0s; }
+.dot-2 { animation-delay: 0.15s; }
+.dot-3 { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.feature-bg {
+  background-image:
+    linear-gradient(to bottom, #EAF4FF, #F6FAFF),
+    url('./assets/features-bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-bg{
+  background: url('./assets/hero-bg.png'); 
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position:left;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 
 .rotate-x-up {
   transform: rotateX(0deg);
@@ -347,4 +416,55 @@
 .custom-scroll::-webkit-scrollbar-track {
   background: #f3f4f6;
   border-radius: 10px;
+}
+
+
+
+/* Tailwind CSS classes are used directly within the component, but here are some additional styles */
+
+/* Add these styles if you're customizing or want to adjust the layout */
+.swiper-container {
+  max-width: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+}
+
+.testi button:hover {
+  background-color: #155dfc;
+  color: #fff;
+}
+
+.testi button {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #155dfc;
+  color: #155dfc;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.slick-pagination {
+  bottom: 10px;
+}
+
+.slick-pagination .slick-dots {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  top: 30px;
+}
+
+.slick-pagination .slick-dots li button {
+  background-color: #fff;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+}
+
+.slick-pagination .slick-dots li.slick-active button {
+  background-color: #333;
 }
