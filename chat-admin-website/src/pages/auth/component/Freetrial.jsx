@@ -3,7 +3,7 @@ import arrowright from "../../../assets/arrowright.png";
 
 const Freetrial = () => {
   return (
-    <section className="w-full bg-gradient-to-b from-blue-50 to-white py-20">
+    <section className=" feature-bg w-full bg-gradient-to-b from-blue-50 to-white py-20">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <span className="inline-flex items-center justify-center mb-6 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white">
          Launch with ease

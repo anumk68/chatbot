@@ -38,21 +38,31 @@ const FeaturesSection = () => {
 
 const FeatureCard = ({ icon, title, desc }) => {
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition text-left">
+    <div className="group rounded-2xl bg-white p-8 shadow-2xl text-left transition-all duration-500 
+      hover:shadow-xl hover:bg-gray-50">
       
-      <div className="mb-6 flex h-[85px] w-[85px] items-center justify-center rounded-2xl bg-gradient-to-tr from-[#7ABAF9] to-[#EDF6FF]">
-        <img src={icon} alt="" className="h-12 w-12 object-contain" />
+      {/* Icon with rotation on hover */}
+      <div className="mb-6 flex h-[85px] w-[85px] items-center justify-center rounded-2xl 
+        bg-gradient-to-tr from-[#7ABAF9] to-[#EDF6FF] transition-all duration-500 
+        group-hover:from-[#0082FF] group-hover:to-[#0082FF]/30">
+        <img src={icon} alt="" className="h-12 w-12 object-contain transition-transform duration-500 
+          group-hover:rotate-[360deg]" />
       </div>
 
-      <h3 className="text-[22px] font-semibold text-[#1B2937] leading-[22px]">
+      {/* Title with color change */}
+      <h3 className="text-[22px] font-semibold text-[#1B2937] leading-[22px] transition-colors duration-500 
+        group-hover:text-[#0082FF]">
         {title}
       </h3>
 
-      <p className="mt-3 text-[16px] text-gray-600 leading-[26px]">
+      {/* Description with subtle color change */}
+      <p className="mt-3 text-[16px] text-gray-600 leading-[26px] transition-colors duration-500 
+        group-hover:text-gray-800">
         {desc}
       </p>
     </div>
   );
 };
+
 
 export default FeaturesSection;

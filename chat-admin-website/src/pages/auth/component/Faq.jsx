@@ -4,7 +4,7 @@ import Accordion from "./Accordion";
 
 const FAQSection = () => {
   return (
-    <section className="w-full bg-gradient-to-b from-blue-50 to-white py-20">
+    <section id="faq's" className="w-full bg-gradient-to-b from-blue-50 to-white py-20">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-40"
@@ -24,7 +24,7 @@ const FAQSection = () => {
 
           {/* RIGHT */}
           <div className="flex flex-col items-start md:sticky md:top-5">
-            <span className="inline-flex gap-2 rounded-full bg-blue-100 px-5 py-2 text-sm font-semibold text-blue-700 mb-6">
+            <span className="mb-6 flex items-center gap-2 rounded-full bg-blue-100 px-5 py-2 text-sm font-semibold text-blue-700">
               <FaQuestionCircle size={14} />
               FAQs
             </span>
@@ -38,7 +38,7 @@ const FAQSection = () => {
               That’s why we’ve put together answers to the most common ones.
             </p>
 
-            <button className="group inline-flex items-center gap-3 rounded-full bg-blue-600 px-7 py-3 text-[17px] font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <button className=" cursor-pointer group inline-flex items-center gap-3 rounded-full bg-blue-600 px-7 py-3 text-[17px] font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               Get a Quote
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-blue-600 transition-transform group-hover:translate-x-1">
                 <FaArrowRight size={12} />

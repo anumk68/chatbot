@@ -68,19 +68,19 @@ const Testimonial = () => {
         </h4>
 
         <div className="flex items-center justify-between mb-10">
-          <h2 className="text-[48px] leading-[55px] font-bold text-gray-900">
+          <h2 className="text-[33px] md:text-[48px] leading-[55px] font-bold text-gray-900">
             What Our Clients Say
           </h2>
 
           {/* Custom Navigation */}
-          <div className="flex gap-4">
+          <div className="hidden md:flex gap-4">
             <button
               onClick={handlePrev}
               aria-label="Previous testimonial"
               className="h-12 w-12 rounded-full border-2
-              flex items-center justify-center
-              bg-blue-500 hover:text-white border-blue-500 text-white
-              transition-all duration-300 hover:scale-110 cursor-pointer"
+      flex items-center justify-center
+      bg-blue-500 hover:text-white border-blue-500 text-white
+      transition-all duration-300 hover:scale-110 cursor-pointer"
             >
               <MdKeyboardArrowLeft size={26} />
             </button>
@@ -89,9 +89,9 @@ const Testimonial = () => {
               onClick={handleNext}
               aria-label="Next testimonial"
               className="h-12 w-12 rounded-full border-2
-              flex items-center justify-center
-              bg-blue-500 hover:text-white border-blue-500  text-white cursor-pointer
-              transition-all duration-300 hover:scale-110"
+      flex items-center justify-center
+      bg-blue-500 hover:text-white border-blue-500 text-white
+      transition-all duration-300 hover:scale-110 cursor-pointer"
             >
               <MdKeyboardArrowRight size={26} />
             </button>

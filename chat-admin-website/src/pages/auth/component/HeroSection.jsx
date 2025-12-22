@@ -15,10 +15,18 @@ const HeroSection = () => {
 
   console.log("[HeroSection] Submitting email:", email); // ✅ debug
 
-  if (!email) {
-    toast.error("Please enter your email");
-    return;
-  }
+ if (!email) {
+  toast.error("Email address is required", {
+    icon: "⚠️",
+    style: {
+      borderRadius: "12px",
+      background: "#fff",
+      color: "#1B2937",
+      border: "1px solid #FCA5A5",
+    },
+  });
+  return;
+}
 
   if (!/\S+@\S+\.\S+/.test(email)) {
     toast.error("Please enter a valid email");
@@ -40,7 +48,7 @@ try {
 
 
   return (
-    <section className="relative overflow-hidden hero-bg mb-30">
+    <section id="home" className="relative overflow-hidden hero-bg mb-30">
       {/* Toaster Component */}
       <Toaster position="top-right" reverseOrder={false} />
 
@@ -84,12 +92,12 @@ try {
 
           <button
             type="submit"
-            disabled={loading} // ✅ disable while loading
+            disabled={loading} 
             className="flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 cursor-pointer
               text-[16px] font-medium text-white hover:bg-blue-700 transition-all duration-200
               shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Sending..." : "Request a Demo"} {/* ✅ dynamic text */}
+            {loading ? "Sending..." : "Request a Demo"} 
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white">
               <img src={arrow} alt="arrow" className="h-3 w-3" />
             </span>

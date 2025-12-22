@@ -5,13 +5,16 @@ import {
   FaLinkedinIn,
   FaYoutube,
   FaArrowUp,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import logo from "../../../assets/digi-logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+    <footer id="contact" className="bg-white border-t border-gray-200">
+      <div className="max-w-8xl mx-auto px-30 sm:px-6 lg:px-16">
         
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row gap-16 py-10 md:py-20">
@@ -35,67 +38,61 @@ const Footer = () => {
           </div>
 
           {/* Links Section */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-            
-            {/* Column */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+            {/* Product Column */}
             <div>
               <h4 className="text-[20px] font-semibold text-gray-900 mb-5 tracking-wide">
                 Product
               </h4>
               <ul className="space-y-3">
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Features
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Integrations
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Download
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Pricing
-                </li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Features</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Integrations</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Download</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Pricing</li>
               </ul>
             </div>
 
-            {/* Column */}
+            {/* Company Column */}
             <div>
               <h4 className="text-[20px] font-semibold text-gray-900 mb-5 tracking-wide">
                 Company
               </h4>
               <ul className="space-y-3">
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  About Us
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Blog
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Clients
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Careers
-                </li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">About Us</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Blog</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Clients</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Careers</li>
               </ul>
             </div>
 
-            {/* Column */}
+            {/* Features Column */}
             <div>
               <h4 className="text-[20px] font-semibold text-gray-900 mb-5 tracking-wide">
                 Features
               </h4>
               <ul className="space-y-3">
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Analytics
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Analytics</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Integrations</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Workflows</li>
+                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">Dashboards</li>
+              </ul>
+            </div>
+
+            {/* Contact Column */}
+            <div>
+              <h4 className="text-[20px] font-semibold text-gray-900 mb-5 tracking-wide">
+                Contact
+              </h4>
+              <ul className="space-y-3 text-gray-500 text-[17px]">
+                <li className="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition">
+                  <FaEnvelope /> info@digichat.com
                 </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Integrations
+                <li className="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition">
+                  <FaPhoneAlt /> 099159 54999
                 </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Workflows
-                </li>
-                <li className="text-[17px] text-gray-500 hover:text-gray-900 cursor-pointer transition">
-                  Dashboards
+                <li className="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition">
+                  <FaMapMarkerAlt /> Phase 8B, Industrial Area, Sector 74
                 </li>
               </ul>
             </div>

@@ -25,6 +25,42 @@ export const createGroup = async (req, res) => {
   }
 };
 
+// delete group
+export const deleteGroup = async (req, res) => {
+  try {
+    const { groupId, chatbotId } = req.params;
+    if (!groupId || !chatbotId) {
+      return res.status(400).json({ message: "Missing groupId or chatbotId" });
+    }
+    await db.query("DELETE FROM groups WHERE id = ? AND chatbot_id = ?", [
+      groupId,
+      chatbotId,
+    ]);
+    res.json({ success: true, message: "Group deleted successfully" });
+  } catch (err) {
+    console.error("deleteGroup ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+// edit group name
+export const editGroupName = async (req, res) => {
+  try {
+    const { groupId, chatbotId } = req.params;
+    const { group_name } = req.body;
+    if (!groupId || !chatbotId || !group_name) {
+      return res.status(400).json({ message: "Missing data" });
+    }
+    await db.query(
+      "UPDATE groups SET group_name = ? WHERE id = ? AND chatbot_id = ?",
+      [group_name, groupId, chatbotId]
+    );
+    res.json({ success: true, message: "Group name updated successfully" });
+  } catch (err) {
+    console.error("editGroupName ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 /* ================= GET GROUPS ================= */
 export const getGroupsByChatbot = async (req, res) => {
   try {
@@ -48,35 +84,33 @@ export const getGroupsByChatbot = async (req, res) => {
   }
 };
 
-/* ================= SEND MESSAGE ================= */
+/* ================= SEND OWNER MESSAGE ================= */
 export const sendOwnerMessage = async (req, res) => {
   try {
     const { groupId, chatbotId } = req.params;
+    const sender_id = req.user?.id;
+    const sender_role = req.user?.role;
 
-    const sender_id = req.user.id;
-    const sender_role = req.user.role;
     const message = req.body?.message;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!message && !image) {
+    if (!sender_id) return res.status(401).json({ message: "Invalid token" });
+    if (!message && !image)
       return res.status(400).json({ message: "Message or image required" });
-    }
 
     const [userRows] = await db.query(
-      "SELECT name FROM users WHERE id = ?",
+      "SELECT id, name FROM users WHERE id = ?",
       [sender_id]
     );
-
-    if (!userRows.length) {
+    if (!userRows.length)
       return res.status(404).json({ message: "Sender not found" });
-    }
-
     const sender_name = userRows[0].name;
 
+    // Insert message with status = "sent"
     const [result] = await db.query(
       `INSERT INTO group_messages
-       (chatbot_id, group_id, sender_id, sender_name, sender_role, message, image)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       (chatbot_id, group_id, sender_id, sender_name, sender_role, message, image, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         chatbotId,
         Number(groupId),
@@ -85,6 +119,7 @@ export const sendOwnerMessage = async (req, res) => {
         sender_role,
         message || "",
         image,
+        "sent",
       ]
     );
 
@@ -97,51 +132,103 @@ export const sendOwnerMessage = async (req, res) => {
       sender_role,
       message,
       image,
+      status: "sent",
       created_at: new Date(),
     };
 
-    // 🔥 SOCKET EMIT
+    // Emit to group socket
     const io = getIO();
     io.to(`group_${groupId}`).emit("receive_group_message", newMessage);
 
+    // Update status to delivered
+    await db.query("UPDATE group_messages SET status='delivered' WHERE id=?", [
+      result.insertId,
+    ]);
+    io.to(`group_${groupId}`).emit("update_message_status", {
+      messageId: result.insertId,
+      status: "delivered",
+    });
+
     res.json({ success: true, message: newMessage });
   } catch (err) {
-    console.error(err);
+    console.error("sendOwnerMessage ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
+// Edit owner message
+export const editownerMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const message = req.body?.message;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-// Agent sends message in group
+    if (!message && !image)
+      return res.status(400).json({ message: "Message or image required" });
+
+    await db.query(`UPDATE group_messages SET message=?, image=? WHERE id=?`, [
+      message || "",
+      image,
+      messageId,
+    ]);
+
+    const updatedMsg = {
+      id: parseInt(messageId),
+      message,
+      image,
+    };
+
+    const io = getIO();
+    io.emit("update_group_message", updatedMsg);
+
+    res.json({ success: true, message: updatedMsg });
+  } catch (err) {
+    console.error("editownerMessage ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Delete owner message
+export const deleteOwnerMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    await db.query(`DELETE FROM group_messages WHERE id=?`, [messageId]);
+
+    const io = getIO();
+    io.emit("delete_group_message", { messageId: parseInt(messageId) });
+
+    res.json({ success: true, message: "Message deleted successfully" });
+  } catch (err) {
+    console.error("deleteOwnerMessage ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ================= SEND AGENT MESSAGE ================= */
 export const sendAgentMessage = async (req, res) => {
   try {
     const { groupId, chatbotId } = req.params;
-
     const sender_id = req.user.id;
-    const sender_role = req.user.role; // Agent
+    const sender_role = req.user.role;
 
     const message = req.body?.message;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!message && !image) {
+    if (!message && !image)
       return res.status(400).json({ message: "Message or image required" });
-    }
 
-    const [userRows] = await db.query(
-      "SELECT name FROM users WHERE id = ?",
-      [sender_id]
-    );
-
-    if (!userRows.length) {
+    const [userRows] = await db.query("SELECT name FROM users WHERE id = ?", [
+      sender_id,
+    ]);
+    if (!userRows.length)
       return res.status(404).json({ message: "Sender not found" });
-    }
-
     const sender_name = userRows[0].name;
 
     const [result] = await db.query(
       `INSERT INTO group_messages
-       (chatbot_id, group_id, sender_id, sender_name, sender_role, message, image)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       (chatbot_id, group_id, sender_id, sender_name, sender_role, message, image, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         chatbotId,
         Number(groupId),
@@ -150,6 +237,7 @@ export const sendAgentMessage = async (req, res) => {
         sender_role,
         message || "",
         image,
+        "sent",
       ]
     );
 
@@ -162,16 +250,47 @@ export const sendAgentMessage = async (req, res) => {
       sender_role,
       message,
       image,
+      status: "sent",
       created_at: new Date(),
     };
 
-    // 🔥 SOCKET EMIT (MISSING THA)
     const io = getIO();
     io.to(`group_${groupId}`).emit("receive_group_message", newMessage);
 
+    // Update status to delivered
+    await db.query("UPDATE group_messages SET status='delivered' WHERE id=?", [
+      result.insertId,
+    ]);
+    io.to(`group_${groupId}`).emit("update_message_status", {
+      messageId: result.insertId,
+      status: "delivered",
+    });
+
     res.json({ success: true, message: newMessage });
   } catch (err) {
-    console.error("Send agent message error:", err);
+    console.error("sendAgentMessage ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/* ================= MARK MESSAGE AS SEEN ================= */
+export const markMessageSeen = async (req, res) => {
+  try {
+    const { messageId, groupId } = req.body;
+
+    await db.query("UPDATE group_messages SET status='seen' WHERE id=?", [
+      messageId,
+    ]);
+
+    const io = getIO();
+    io.to(`group_${groupId}`).emit("update_message_status", {
+      messageId,
+      status: "seen",
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("markMessageSeen ERROR:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -188,14 +307,29 @@ export const getGroupMessages = async (req, res) => {
     const groupIdNum = parseInt(groupId, 10);
     const chatbotIdStr = String(chatbot_id).trim();
 
+    // Fetch messages with sender info and status
     const [rows] = await db.query(
-      `SELECT *
+      `SELECT id, chatbot_id, group_id, sender_id, sender_name, sender_role, message, image, status, created_at
        FROM group_messages
        WHERE chatbot_id = ?
        AND group_id = ?
        ORDER BY created_at ASC`,
       [chatbotIdStr, groupIdNum]
     );
+
+    // Optionally: Mark all messages as "delivered" for this user if they are not sender
+    const myUserId = req.user?.id;
+    if (myUserId) {
+      const messagesToUpdate = rows.filter(
+        (msg) => msg.sender_id !== myUserId && msg.status === "sent"
+      );
+      for (const msg of messagesToUpdate) {
+        await db.query(
+          "UPDATE group_messages SET status='delivered' WHERE id=?",
+          [msg.id]
+        );
+      }
+    }
 
     res.json({ success: true, messages: rows });
   } catch (err) {
@@ -206,38 +340,107 @@ export const getGroupMessages = async (req, res) => {
 
 export const getGroupMembers = async (req, res) => {
   try {
-    const { chatbot_id } = req.params;
+    const { groupId, chatbotId } = req.params;
 
-    console.log("Incoming request to getGroupMembers");
-    console.log("Params:", req.params);
-
-    if (!chatbot_id) {
-      console.warn("Missing chatbot_id in params");
-      return res.status(400).json({ message: "Missing chatbot_id" });
+    if (!groupId || !chatbotId) {
+      return res.status(400).json({ message: "Missing groupId or chatbotId" });
     }
 
-    const chatbotIdStr = String(chatbot_id).trim();
-    console.log("Fetching members for chatbot_id:", chatbotIdStr);
-
-    const [rows] = await db.query(
-      `SELECT id, name, role, status
-       FROM users
-       WHERE chatbot_id = ?`,
-      [chatbotIdStr]
+    // Fetch group members JSON from groups table
+    const [groupRows] = await db.query(
+      `SELECT members
+       FROM groups
+       WHERE id = ? AND chatbot_id = ?`,
+      [groupId, chatbotId]
     );
 
-    console.log(`SQL executed. Number of members fetched: ${rows.length}`);
-    rows.forEach((r, i) => {
-      console.log(
-        `Member ${i + 1}: id=${r.id}, name=${r.name}, role=${r.role}, status=${
-          r.status
-        }`
-      );
+    if (!groupRows.length) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    const memberIds = JSON.parse(groupRows[0].members || "[]");
+
+    if (!memberIds.length) {
+      return res.json({ success: true, members: [] });
+    }
+
+    // Fetch user details for members
+    const [userRows] = await db.query(
+      `SELECT id, name, role, status
+       FROM users
+       WHERE id IN (?) AND chatbot_id = ?`,
+      [memberIds, chatbotId]
+    );
+
+    res.json({ success: true, members: userRows });
+  } catch (err) {
+    console.error("Error fetching group members:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Send voice message
+export const sendVoiceMessage = async (req, res) => {
+  try {
+    const { groupId, chatbotId } = req.params;
+    const sender_id = req.user.id;
+    const sender_role = req.user.role;
+
+    if (!req.file)
+      return res.status(400).json({ message: "Audio file required" });
+
+    const audioPath = `/uploads/${req.file.filename}`;
+
+    const [userRows] = await db.query("SELECT name FROM users WHERE id = ?", [
+      sender_id,
+    ]);
+    if (!userRows.length)
+      return res.status(404).json({ message: "Sender not found" });
+    const sender_name = userRows[0].name;
+
+    const [result] = await db.query(
+      `INSERT INTO group_messages
+       (chatbot_id, group_id, sender_id, sender_name, sender_role, message, audio, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        chatbotId,
+        Number(groupId),
+        sender_id,
+        sender_name,
+        sender_role,
+        "",
+        audioPath,
+        "sent",
+      ]
+    );
+
+    const newMessage = {
+      id: result.insertId,
+      chatbot_id: chatbotId,
+      group_id: Number(groupId),
+      sender_id,
+      sender_name,
+      sender_role,
+      message: "",
+      audio: audioPath,
+      status: "sent",
+      created_at: new Date(),
+    };
+
+    const io = getIO();
+    io.to(`group_${groupId}`).emit("receive_group_message", newMessage);
+
+    await db.query("UPDATE group_messages SET status='delivered' WHERE id=?", [
+      result.insertId,
+    ]);
+    io.to(`group_${groupId}`).emit("update_message_status", {
+      messageId: result.insertId,
+      status: "delivered",
     });
 
-    res.json({ success: true, members: rows });
+    res.json({ success: true, message: newMessage });
   } catch (err) {
-    console.error("Error fetching members:", err);
+    console.error("sendVoiceMessage ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };

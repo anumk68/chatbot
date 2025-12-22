@@ -16,7 +16,10 @@ import { logoutUser } from "../../redux/auth/authSlice.js";
 
 import GroupChatPanel from "./groupchat/GroupChatPanel.jsx";
 
+const chatbotId = localStorage.getItem("chatbotId");
+
 const API_BASE = import.meta.env.VITE_NODE_BASE_URL + "/api";
+const API = import.meta.env.VITE_NODE_BASE_URL;
 
 export default function TeamPage() {
   const [owner, setOwner] = useState(null);
@@ -97,10 +100,14 @@ export default function TeamPage() {
     if (!window.confirm("Delete this group permanently?")) return;
 
     try {
-      await axios.delete(`${API_BASE}/groups/delete/${groupId}`);
+      await axios.delete(`${API}/api/delete/${groupId}/${chatbotId}`);
       setGroups((prev) => prev.filter((g) => g.id !== groupId));
       setSelectedGroup(null);
       toast.success("Group deleted");
+      console.log("Deleted group:", groupId);
+      console.log("Updated groups list:", groups);
+      console.log("Current selected group:", selectedGroup);
+      console.log("Chatbot ID:", chatbotId);
     } catch (err) {
       toast.error("Failed to delete group");
     }
@@ -501,47 +508,68 @@ export default function TeamPage() {
   const handleRemoveMember = (index) =>
     setMembers(members.filter((_, i) => i !== index));
 
-  // create group submit
+  // Fetch all groups for the current chatbot
+const fetchGroups = async () => {
+  try {
+    const chatbotId = localStorage.getItem("chatbotId");
+    const res = await axios.get(`${API_BASE}/groups/${chatbotId}`);
+    const serverGroups = res.data?.data ?? []; // <-- use 'data' from backend
+
+    setGroups(
+      serverGroups.map((g) => ({
+        id: g.group_id,
+        name: g.group_name,
+        description: g.description ?? "",
+        members: g.members || [],
+        activeMembers: g.activeMembers || 0,
+        totalChats: g.total_chats || 0,
+        goals: g.goals || 0,
+        satisfaction: g.satisfaction ?? "n/a",
+      }))
+    );
+  } catch (err) {
+    toast.error("Failed to fetch groups");
+    console.error(err);
+  }
+};
+
+
+  // Create group submit
   const handleSubmit = async () => {
-    if (!groupName.trim()) {
-      return toast.error("Group name is required");
-    }
+    if (!groupName.trim()) return toast.error("Group name is required");
 
     const chatbotId = localStorage.getItem("chatbotId");
-
     const payload = {
       group_name: groupName,
       members: members.filter(Boolean),
       chatbot_id: chatbotId,
     };
 
-    console.log("payload", payload);
-
     try {
       const res = await axios.post(`${API_BASE}/create/${chatbotId}`, payload);
-
       toast.success("Group created");
 
+      // Add new group at top
+      const newGroup = {
+        id: res.data?.group?.id ?? `new-${Date.now()}`,
+        name: groupName,
+        description: res.data?.group?.description || "",
+        members: members.filter(Boolean),
+        activeMembers: members.filter(Boolean).length,
+        totalChats: 0,
+        goals: 0,
+        satisfaction: "n/a",
+      };
+
+      setGroups((prev) => [newGroup, ...prev]);
+
+      // Reset form
       setGroupModal(false);
       setGroupName("");
       setMembers([null]);
 
-      // get all groups via api
-      const allGroupsRes = await axios.get(`${API_BASE}/groups/${chatbotId}`);
-      console.log("allgroupsres", allGroupsRes);
-      const serverGroups = allGroupsRes.data?.groups ?? [];
-      setGroups(
-        serverGroups.map((g) => ({
-          id: g.id ?? g._id ?? g.name,
-          name: g.group_name,
-          description: g.description ?? "",
-          members: g.members || [],
-          activeMembers: g.activeMembers || 0,
-          totalChats: g.totalChats || 0,
-          goals: g.goals || 0,
-          satisfaction: g.satisfaction || "n/a",
-        }))
-      );
+      // Sync with server
+      fetchGroups();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create group");
     }
@@ -574,7 +602,7 @@ export default function TeamPage() {
                 {/* Close Button */}
                 <button
                   onClick={() => setShowInviteSettings(false)}
-                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+                  className="absolute top-3 right-3 cursor-pointer text-gray-500 hover:text-gray-700 cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -708,7 +736,7 @@ export default function TeamPage() {
               {owner && (
                 <AgentItem
                   key={owner.id}
-                  agent={{ ...owner, status: "Online", statusColor: "green" }}
+                  agent={{ ...owner, status: "active", statusColor: "green" }}
                   onSelect={() => handleSelectItem(owner)}
                   onLogout={() => toast.error("You cannot remove yourself.")}
                   onEdit={() =>
@@ -1016,7 +1044,7 @@ export default function TeamPage() {
         style={{ backdropFilter: isDetailsOpen ? "blur(6px)" : "none" }}
       >
         <button
-          className="absolute top-4 right-4 text-gray-600 z-9"
+          className="absolute top-4 right-4 text-gray-600 z-9 cursor-pointer "
           onClick={handleDetailsToggle}
         >
           <X className="w-6 h-6" />
@@ -1357,27 +1385,30 @@ function GroupItem({ group, onSelect, isSelected, getAgentNameById }) {
         <div>
           <p className="font-semibold text-gray-800">{group.name}</p>
           <p className="text-xs text-gray-500">
-            {group.activeMembers}/{(group.members || []).length} accepting chats
+            {group.activeMembers}/{group.members.length} accepting chats
           </p>
         </div>
         <div className="flex items-center -space-x-2">
-          {displayedMembers.map((m, idx) => (
+          {displayedMembers.map((id) => (
             <div
-              key={idx}
-              className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs border-2 border-white"
-              title={getAgentNameById(m)}
+              key={id}
+              className="w-6 h-6 rounded-full bg-gray-300 border border-white flex items-center justify-center text-xs text-white font-semibold"
+              title={getAgentNameById(id)}
             >
-              {getAgentNameById(m)[0]}
+              {getAgentNameById(id)
+                ?.split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
             </div>
           ))}
           {remainingCount > 0 && (
-            <div className="w-6 h-6 bg-gray-300 text-gray-700 rounded-full flex items-center justify-center text-xs border-2 border-white">
+            <div className="w-6 h-6 rounded-full bg-gray-400 border border-white flex items-center justify-center text-xs text-white font-semibold">
               +{remainingCount}
             </div>
           )}
         </div>
       </div>
-      <p className="text-xs text-gray-400 mt-1">{group.description}</p>
     </div>
   );
 }
@@ -1420,45 +1451,46 @@ function SuspendedAgentItem({ agent, onSelect, onRestore, isSelected }) {
 }
 
 /* ---------- Profile Panels ---------- */
+function AgentProfile({ agent, getInitials }) {
+  const [groupsAccordionOpen, setGroupsAccordionOpen] = useState(false);
 
-function AgentProfile({
-  agent,
-  groupsAccordionOpen,
-  setGroupsAccordionOpen,
-  getInitials,
-}) {
   return (
-    <div>
+    <div className="space-y-3">
       <h2 className="text-xl font-semibold mb-2">Agent Details</h2>
-      <div className="mb-4 flex items-center space-x-4">
+
+      <div className="flex items-center space-x-4">
         <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
           {agent.initials || getInitials(agent.name)}
         </div>
         <div>
-          <p className="text-lg font-semibold">{agent.name}</p>
+          <p className="text-lg font-semibold capitalize">{agent.name}</p>
           <p className="text-sm text-gray-500">{agent.email}</p>
         </div>
       </div>
+
       <p>
-        <strong>Role:</strong> {agent.role}
+        <strong className="capitalize">Role:</strong> {agent.role}
       </p>
       <p>
-        <strong>Status:</strong> {agent.status}
+        <strong className="capitalize">Status:</strong> {agent.status}
       </p>
       <p>
-        <strong>Chat Limit:</strong> {agent.chatLimit}
+        <strong className="capitalize">Chat Limit:</strong> {agent.chatLimit}
       </p>
       <p>
-        <strong>Last Seen:</strong> {agent.lastSeen}
+        <strong className="capitalize">Last Seen:</strong> {agent.lastSeen}
       </p>
+
+      {/* Groups Accordion */}
       <div className="mt-4">
         <button
-          className="flex items-center space-x-1 text-blue-600"
+          className="flex items-center justify-between w-full px-2 py-1 bg-gray-100 rounded-md text-left"
           onClick={() => setGroupsAccordionOpen(!groupsAccordionOpen)}
         >
-          <span>Groups</span>{" "}
+          <span className="font-medium">Groups</span>
           {groupsAccordionOpen ? <ChevronUp /> : <ChevronDown />}
         </button>
+
         {groupsAccordionOpen && (
           <ul className="mt-2 ml-4 list-disc">
             {(agent.groups || []).map((g) => (
@@ -1472,24 +1504,40 @@ function AgentProfile({
 }
 
 function ChatbotProfile({ chatbot }) {
+  const [detailsOpen, setDetailsOpen] = useState(true);
+
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Chatbot Details</h2>
-      <p>
-        <strong>Name:</strong> {chatbot.name}
-      </p>
-      <p>
-        <strong>Status:</strong> {chatbot.status}
-      </p>
-      <p>
-        <strong>Description:</strong> {chatbot.description}
-      </p>
+    <div className="space-y-3">
+      <button
+        className="flex items-center justify-between w-full px-2 py-1 bg-gray-100 rounded-md text-left"
+        onClick={() => setDetailsOpen(!detailsOpen)}
+      >
+        <span className="font-semibold">Chatbot Details</span>
+        {detailsOpen ? <ChevronUp /> : <ChevronDown />}
+      </button>
+
+      {detailsOpen && (
+        <div className="mt-2 ml-2 space-y-1">
+          <p>
+            <strong>Name:</strong> {chatbot.name}
+          </p>
+          <p>
+            <strong>Status:</strong> {chatbot.status}
+          </p>
+          <p>
+            <strong>Description:</strong> {chatbot.description}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
 function GroupProfile({ group, getAgentNameById }) {
+  const [membersAccordionOpen, setMembersAccordionOpen] = useState(false);
+
   return (
-    <div>
+    <div className="space-y-3">
       <h2 className="text-xl font-semibold mb-2">Group Details</h2>
       <p>
         <strong>Name:</strong> {group.name}
@@ -1498,31 +1546,54 @@ function GroupProfile({ group, getAgentNameById }) {
         <strong>Description:</strong> {group.description}
       </p>
 
-      <div className="mt-4">
-        <h3 className="font-semibold mb-2">Members</h3>
-        <ul className="ml-4 list-disc">
-          {(group.members || []).map((m) => (
-            <li key={m}>{getAgentNameById(m)}</li>
-          ))}
-        </ul>
+      {/* Members Accordion */}
+      <div className="mt-2">
+        <button
+          className="flex items-center justify-between w-full px-2 py-1 bg-gray-100 rounded-md text-left"
+          onClick={() => setMembersAccordionOpen(!membersAccordionOpen)}
+        >
+          <span className="font-medium">Members</span>
+          {membersAccordionOpen ? <ChevronUp /> : <ChevronDown />}
+        </button>
+
+        {membersAccordionOpen && (
+          <ul className="mt-2 ml-4 list-disc">
+            {(group.members || []).map((m) => (
+              <li key={m}>{getAgentNameById(m)}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
 }
 
 function SuspendedAgentProfile({ agent }) {
+  const [detailsOpen, setDetailsOpen] = useState(true);
+
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Suspended Agent</h2>
-      <p>
-        <strong>Name:</strong> {agent.name}
-      </p>
-      <p>
-        <strong>Email:</strong> {agent.email}
-      </p>
-      <p>
-        <strong>Status:</strong> Suspended
-      </p>
+    <div className="space-y-3">
+      <button
+        className="flex items-center justify-between w-full px-2 py-1 bg-gray-100 rounded-md text-left"
+        onClick={() => setDetailsOpen(!detailsOpen)}
+      >
+        <span className="font-semibold">Suspended Agent</span>
+        {detailsOpen ? <ChevronUp /> : <ChevronDown />}
+      </button>
+
+      {detailsOpen && (
+        <div className="mt-2 ml-2 space-y-1">
+          <p>
+            <strong>Name:</strong> {agent.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {agent.email}
+          </p>
+          <p>
+            <strong>Status:</strong> Suspended
+          </p>
+        </div>
+      )}
     </div>
   );
 }

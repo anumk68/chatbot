@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 
-export default function GroupMembersPanel({ onClose, chatbotId }) {
+export default function GroupMembersPanel({ onClose, chatbotId, groupId }) {
   const [members, setMembers] = useState([]);
-
-  const API_URI = import.meta.env.VITE_NODE_BASE_URL; 
+  const API_URI = import.meta.env.VITE_NODE_BASE_URL;
 
   useEffect(() => {
     const fetchMembers = async () => {
+      if (!chatbotId || !groupId) return;
+
       try {
-        console.log("Fetching members for chatbot:", chatbotId);
-        const res = await axios.get(`${API_URI}/api/group-members/${chatbotId}`);
+        console.log("Fetching members for group:", groupId, "chatbot:", chatbotId);
+        const res = await axios.get(`${API_URI}/api/group-members/${groupId}/${chatbotId}`);
         console.log("API response:", res.data);
         if (res.data.success) setMembers(res.data.members);
       } catch (err) {
@@ -19,8 +20,8 @@ export default function GroupMembersPanel({ onClose, chatbotId }) {
       }
     };
 
-    if (chatbotId) fetchMembers();
-  }, [chatbotId]);
+    fetchMembers();
+  }, [chatbotId, groupId]);
 
   return (
     <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-lg border-l flex flex-col z-50">
@@ -43,7 +44,7 @@ export default function GroupMembersPanel({ onClose, chatbotId }) {
             </div>
             <div className="flex flex-col">
               <span className="font-medium">{member.name}</span>
-              <span className="text-xs text-gray-500">{member.email}</span>
+              <span className="text-xs text-gray-500">{member.role} | {member.status}</span>
             </div>
           </div>
         ))}

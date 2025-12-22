@@ -50,6 +50,8 @@ import db from "../config/db.js";
 let io;
 export const getIO = () => io;
 
+const activeCalls = {};
+
 export const initChatSocket = (server) => {
   io = new Server(server, {
     cors: { origin: "*", methods: ["GET", "POST"] },
@@ -138,20 +140,41 @@ export const initChatSocket = (server) => {
       }
     });
 
-    /* ================= GROUP CHAT (🔥 ADDED HERE) ================= */
-
+    /* ===== GROUP CHAT ===== */
     socket.on("join_group", (groupId) => {
       socket.join(`group_${groupId}`);
-      console.log(`👥 joined group_${groupId}`);
-    });
-
-    socket.on("leave_group", (groupId) => {
-      socket.leave(`group_${groupId}`);
+      console.log(`Joined group_${groupId}`);
     });
 
     socket.on("send_group_message", (payload) => {
       io.to(`group_${payload.groupId}`).emit("receive_group_message", payload);
     });
+
+    /* ===== CALL ===== */
+    socket.on("call:start", ({ groupId, type, callerId }) => {
+      activeCalls[groupId] = {
+        type,
+        callerId,
+        participants: new Set([socket.id]),
+      };
+      socket.to(`group_${groupId}`).emit("call:incoming", { groupId, type, callerId });
+    });
+
+    socket.on("call:accept", ({ groupId }) => {
+      if (!activeCalls[groupId]) return;
+      activeCalls[groupId].participants.add(socket.id);
+      socket.to(`group_${groupId}`).emit("call:user-joined", { socketId: socket.id });
+    });
+
+    socket.on("webrtc:signal", ({ groupId, to, data }) => {
+      io.to(to).emit("webrtc:signal", { from: socket.id, data });
+    });
+
+    socket.on("call:end", ({ groupId }) => {
+      delete activeCalls[groupId];
+      io.to(`group_${groupId}`).emit("call:end");
+    });
+
 
     // --- Agent sends message to conversation
     // Payload: { conversation_id, agent_id, message, file?, sender: 'agent' }

@@ -10,7 +10,7 @@ const PricingSection = () => {
     {
       title: "Basic Package",
       priceMonthly: 9,
-      priceYearly: 277,
+      priceYearly: 105,
       description:
         "Perfect for individuals, freelancers, and small teams starting out.",
       users: "Maximum 1 User",
@@ -24,8 +24,8 @@ const PricingSection = () => {
     },
     {
       title: "Professional Package",
-      priceMonthly: 9,
-      priceYearly: 452,
+      priceMonthly: 29,
+      priceYearly: 345,
       description:
         "Best for growing businesses that need more power and flexibility.",
       users: "Maximum 3 Users",
@@ -40,8 +40,8 @@ const PricingSection = () => {
     },
     {
       title: "Enterprise Package",
-      priceMonthly: 9,
-      priceYearly: 904,
+      priceMonthly: 39,
+      priceYearly: 462,
       description:
         "Tailored for large teams and complex needs for SaaS services.",
       users: "Maximum 7 Users",
@@ -86,7 +86,7 @@ const PricingSection = () => {
             onClick={() =>
               setBilling(billing === "monthly" ? "yearly" : "monthly")
             }
-            className="relative w-14 h-7 bg-blue-600 rounded-full"
+            className="relative w-14 h-7 bg-blue-600 rounded-full cursor-pointer"
           >
             <span
               className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${

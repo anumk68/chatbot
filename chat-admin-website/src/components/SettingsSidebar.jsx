@@ -18,6 +18,8 @@ const SettingsSidebar = ({ isOpen, onClose }) => {
   // Check if a path is active
   const isActive = (path) => location.pathname === path;
 
+    
+
   // Auto-open parent sections if a child route is active
   useEffect(() => {
     if (
